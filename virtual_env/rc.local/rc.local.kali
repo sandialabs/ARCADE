@@ -1,0 +1,6 @@
+#!/bin/sh -e
+#
+#  rc.local
+
+service console-getty stop
+exit 0

@@ -1,0 +1,42 @@
+{
+    "Simulator": [
+        {
+            "executableName": "Simulink"
+        }
+    ],
+    "Endpoints": [
+        {
+            "Node": "SGP_RCP_SGL_Controller",
+            "IP_Host": "127.0.0.1",
+            "PLCS":[
+                {
+                    "IP_PLC": "127.0.0.1",
+                    "Proto": "Modbus",
+                    "SensorTags": "PV-TurbineValve-Opening,PV-Turbine-Power,DB-TBV-IPS-Turbine-Bypass,PV-Shaft-Speed",
+                    "SensorMem": "2048,2056,2060,2062",
+                    "ActuatorTags": "PV-TurbineValve-Opening",
+                    "ActuatorMem": "2070",
+                    "ScanTime": "0.1",
+                    "TimeMem": "2074",
+                    "MemFormat": "32_float",
+                    "Endianess":"big,big",
+                    "Port":"1502"
+                }
+            ],
+            "Server":[
+                {
+                    "Server_IP": "192.168.0.11",
+                    "Proto": "Modbus",
+                    "SensorTags": "PV-BlowerA-Speed",
+                    "SensorMem": "2052",
+                    "ActuatorTags": "PV-BlowerB-Speed",
+                    "ActuatorMem": "2058",
+                    "ScanTime": "0.1",
+                    "TimeMem": "2048",
+                    "MemFormat": "32_float"
+                }
+            ]
+            
+        }
+    ]
+}

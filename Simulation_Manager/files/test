@@ -1,0 +1,3 @@
+curl http://20.0.1.50:8080/Scada-LTS/login.htm -X POST -d 'username=admin&password=admin&submit=Login' -H 'Content-Type: application/x-www-form-urlencoded' -c /tmp/cookies.txt
+curl -b /tmp/cookies.txt -v -F importFile=@/home/test-bed/Desktop/Auto_MM_V2_2/HMI_INS_BR_2.zip http://20.0.1.50:8080/Scada-LTS/import_project.htm
+curl -X POST -b /tmp/cookies.txt --data-raw $'callCount=1\npage=/Scada-LTS/import_project.htm\nhttpSessionId=\nscriptSessionId=D15BC242A0E69D4251D5585A07806324697\nc0-scriptName=EmportDwr\nc0-methodName=loadProject\nc0-id=0\nbatchId=5\n' http://20.0.1.50:8080/Scada-LTS/dwr/call/plaincall/EmportDwr.loadProject.dwr

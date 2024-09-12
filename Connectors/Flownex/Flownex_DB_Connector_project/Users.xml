@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfUser xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <User>
+    <UserName>Engineer</UserName>
+    <PasswordHash>85C353AB88DACEB635B08D4F5145E42137923801</PasswordHash>
+    <UserTypeName>Engineer</UserTypeName>
+  </User>
+</ArrayOfUser>

@@ -1,0 +1,32 @@
+PLC 1 RCP
+IP:20.0.1.10
+Port:502
+WordOrder:Big
+ByteOrder:Big
+
+Event 1 PV_TurbineValve_Opening
+PLC:1
+mem:2048
+values:1.0
+type:single
+delay:0
+persist:true
+
+Event 2 PV_Turbine_Power
+PLC:1
+mem:2056
+values:2.0
+type:single
+delay:0
+persist:true
+
+Event 3 PV_Shaft_Speed
+PLC:1
+mem:2062
+values:3.0
+type:single
+delay:0
+persist:true
+
+start
+Event 1, Event 2, Event 3

@@ -1,0 +1,264 @@
+<?xml version="1.0" standalone="yes"?>
+<IPS>
+  <Library Name="IPS" Version="8.16.0.5518" />
+  <Library Name="CapeOpenFluidGenerator" Version="1.0.8873.0" />
+  <Library Name="DCS" Version="8.16.0.0" />
+  <Library Name="ElectricalNetworkSolver" Version="8.16.0.0" />
+  <Library Name="Flownex" Version="8.16.0.0" />
+  <Library Name="ForceCalculations" Version="1.0.8873.0" />
+  <Library Name="IPS.Actions" Version="8.16.0.0" />
+  <Library Name="IPS.Alarms" Version="8.16.0.0" />
+  <Library Name="IPS.Ansys" Version="8.16.0.0" />
+  <Library Name="IPS.Backtracking" Version="8.16.0.0" />
+  <Library Name="IPS.CAESAR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.DataTransfer" Version="8.16.0.0" />
+  <Library Name="IPS.Designer" Version="8.16.0.0" />
+  <Library Name="IPS.EES" Version="8.16.0.0" />
+  <Library Name="IPS.Excel" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelInputSheets" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelReporting" Version="8.16.0.0" />
+  <Library Name="IPS.Exposers" Version="8.16.0.0" />
+  <Library Name="IPS.FMI" Version="8.16.0.0" />
+  <Library Name="IPS.GAOptimiser" Version="8.16.0.0" />
+  <Library Name="IPS.GlobalParameters" Version="8.16.0.0" />
+  <Library Name="IPS.Logger" Version="8.16.0.0" />
+  <Library Name="IPS.Mathcad" Version="8.16.0.0" />
+  <Library Name="IPS.OPCDriver" Version="8.16.0.0" />
+  <Library Name="IPS.OPCUA" Version="1.0.0.0" />
+  <Library Name="IPS.ParameterDisplay" Version="8.16.0.0" />
+  <Library Name="IPS.PropertyMonitor" Version="8.16.0.0" />
+  <Library Name="IPS.Relap" Version="8.16.0.0" />
+  <Library Name="IPS.ROHR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.ROMBuilder" Version="8.16.0.0" />
+  <Library Name="IPS.ScaleDrawing" Version="8.16.0.0" />
+  <Library Name="IPS.Scheduler" Version="8.16.0.0" />
+  <Library Name="IPS.Scripting" Version="8.16.0.0" />
+  <Library Name="IPS.SensitivityAnalysis" Version="8.16.0.0" />
+  <Library Name="IPS.SixSigma" Version="8.16.0.0" />
+  <Library Name="IPS.TextFileLink" Version="8.16.0.0" />
+  <Library Name="IPS.Tools" Version="8.16.0.0" />
+  <Library Name="IPS.VideoRecorder" Version="1.0.0.0" />
+  <Library Name="IPS.Visualisation" Version="8.16.0.0" />
+  <Library Name="IPS.WordReporting" Version="8.16.0.0" />
+  <Library Name="NistFluidGenerator" Version="1.0.8873.0" />
+  <IPS.Core.TaskList>
+    <ListItems>
+      <DCS.Task.DistributedControlTask>
+        <Properties>AutoCalcExecutionNumber Data DiagnosticMode ExecuteAfterSteadyState ExecuteBeforeSteadyState ExecuteDuringSteadyState Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime RenameMainViews ShowExecutionNumbers TID UserDescription </Properties>
+        <Item Index="0" Identifier="Distributed Control Task">
+          <Values>  "False" "" "False" "False" "True" "False" "{TASK}Distributed Control Task" "True" "1" "Distributed Control Task" "0" "False" "False" "" "" </Values>
+        </Item>
+      </DCS.Task.DistributedControlTask>
+      <ElectricalNetworkSolver.Tasks.ENTask>
+        <Properties>ActivationError ConvergenceCriteria Data Identifier IsDefaultTask IterationDivisor MaxIterations NumberOfThreads PersistedIdentifierWithTemplate PowerDecimalPrecision PreviousTime SolverError TID UserDescription </Properties>
+        <Item Index="0" Identifier="Electrical Network Solver">
+          <Values>  "False" "0.001" "" "{TASK}Electrical Network Solver" "True" "25" "100" "1" "Electrical Network Solver" "15" "0" "False" "" "" </Values>
+        </Item>
+      </ElectricalNetworkSolver.Tasks.ENTask>
+      <Flownex.ForceCalculations.ForceCalculationsTask>
+        <Properties>Data ForceFlowPathSections GenerateCaesarResults GenerateRohrResults Identifier IsDefaultTask NumberOfThreads OutputPath PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Force Calculations">
+          <Values>  "" "ForceFlowPaths.config" "False" "False" "{TASK}Force Calculations" "True" "1" "c:\" "Force Calculations" "0" "" "" </Values>
+        </Item>
+      </Flownex.ForceCalculations.ForceCalculationsTask>
+      <Flownex.Solver.FlowSolver>
+        <Properties>AllTransientStepsConverged Data dDensityError dEnergyError dErrorEstimate dMassFlowError dMaxCourantPressure dMaxCourantScalar dMaxTimeStepChangeConcentration dMaxTimeStepChangeEnthalpy dMaxTimeStepChangePressure dPAmb dPressureError dTime dTimeStepSize FlowPathsManager Identifier iFlowElementCount iFlowNodeCount iHeatNodeCount iNumberMinimumTimeStepReached iNumberRejectedTimeSteps IsDefaultTask IterationCount LastUserNumber MaxContinuityResidual MaxEnergyResidual MaxMomentumResidual NumberOfThreads PersistedIdentifierWithTemplate PreviousTime RestartDataFileName SolverConfiguration.AlphaCNN SolverConfiguration.bEaseLowFlowTemperatureConverge SolverConfiguration.bTreatHXTwoPhaseErrorsAsWarnings SolverConfiguration.CalcAmbTemp SolverConfiguration.cAmbientPressureSpecification SolverConfiguration.cNonCondensableSolverCoupling SolverConfiguration.CombustionCalculationMode SolverConfiguration.ConvergeCriteria SolverConfiguration.ConvergeCriteriaConc SolverConfiguration.ConvergeCriteriaTransient SolverConfiguration.cTPTankSSEnergySolverOption SolverConfiguration.cUserTransientSolverOption SolverConfiguration.dAlphaCNIT SolverConfiguration.dAlphaFNIT SolverConfiguration.dAlphaHNIT SolverConfiguration.dAlphaMNIT SolverConfiguration.dAlphaPhiNIT SolverConfiguration.dEaseLowFlowThreshold SolverConfiguration.DiameterScalingFactor SolverConfiguration.dMassFlowOscillationLimitNIT SolverConfiguration.dMinAllowableTPTankSSEnergySource SolverConfiguration.dMinRelaxationExternalSolvers SolverConfiguration.dRelaxMassFraction SolverConfiguration.dRelaxNonLinearConcSolver SolverConfiguration.dRelaxSolidNodeTemp SolverConfiguration.dRelaxStaticPresBoundaries SolverConfiguration.dRelaxTPTankSSEnergy SolverConfiguration.dRelaxVortex SolverConfiguration.dUserAmbientPressure SolverConfiguration.Elevation SolverConfiguration.FluidDataReference SolverConfiguration.GenerateReactorResultsPeriodically SolverConfiguration.GenerateResultsAfterSteadyState SolverConfiguration.GenerateResultsAfterTransient SolverConfiguration.GenerateResultsPeriodically SolverConfiguration.GiveErrorForMaterialPropertiesSmallerThanZero SolverConfiguration.GravitationalAcceleration SolverConfiguration.iMaxIterEFV SolverConfiguration.iMaxNumberIterationsExternalSolver SolverConfiguration.InitialiseSteadyStateFromSnap SolverConfiguration.InitialValuesSnapFile SolverConfiguration.InitPressure SolverConfiguration.InitTemp SolverConfiguration.iNumIterBeforeScripts SolverConfiguration.iNumIterVortex SolverConfiguration.IsoThermal SolverConfiguration.LevelOfDetailShown SolverConfiguration.MaximumAllowableTemperature SolverConfiguration.MinimumAllowableTemperature SolverConfiguration.NumIterMain SolverConfiguration.NumIterPres SolverConfiguration.NumIterTemp1 SolverConfiguration.NumIterTemp2 SolverConfiguration.NumIterTempTransient SolverConfiguration.NumMaxIterIterativeConcSolver SolverConfiguration.NumMaxIterTempSS SolverConfiguration.ReactorResultsIntervals SolverConfiguration.RelaxCAU SolverConfiguration.RelaxDensityTwoPhase SolverConfiguration.RelaxJunction SolverConfiguration.RelaxMass SolverConfiguration.RelaxmDG SolverConfiguration.RelaxOpt SolverConfiguration.RelaxOR SolverConfiguration.RelaxPres SolverConfiguration.RelaxPRV SolverConfiguration.RelaxRho SolverConfiguration.RelaxShaftSpeed SolverConfiguration.RelaxTemp SolverConfiguration.RelaxTempEnd SolverConfiguration.RelaxTwoPhaseHTC SolverConfiguration.ResultsIntervals SolverConfiguration.RoughnessScalingFactor SolverConfiguration.SaveSolverStateVerbose SolverConfiguration.ShowWarnings SolverConfiguration.SolveTemp SolverConfiguration.SolveTraceElements SolverConfiguration.StartMode SolverConfiguration.TAmbient SolverConfiguration.TemperatureRiseCurve1 SolverConfiguration.TemperatureRiseCurve2 SolverConfiguration.TemperatureSolverBiCGMaxIterations SolverConfiguration.TemperatureSolverBiCGTConvergenceCriteria SolverConfiguration.TemperatureSolverUseBiCG SolverConfiguration.TreatPhaseChangeWarningsAsErrors SteadyStateConverged TID TotalFluidMass TotalFluidVolume UserDescription </Properties>
+        <Item Index="0" Identifier="Flow Solver">
+          <Values>  "False" "" "0" "0" "0" "0" "0" "0" "0" "0 Specific_Energy kJ/kg" "0 Pressure_Stress kPa" "0 Pressure_Stress kPa" "0" "0 Time s" "0 Time s" "FlowPaths.config" "{TASK}Flow Solver" "0" "0" "0" "0" "0" "True" "0" "1" "0" "0" "0" "1" "Flow Solver" "0" "FlownexSolverState" "1" "False" "False" "False" "StandardAtmosphericRelation" "SemiImplicit" "DoNotCalculate" "0.0001" "1E-08" "0.0001" "Internal" "NonIterative" "1 None " "1 None " "1 None " "1 None " "1 None " "1E-09 Flow_Rate_Mass kg/s" "1" "0.9 Efficiency 0-1" "0.001 Power kW" "0.05" "1" "1" "1" "1" "1" "1" "101.325 Pressure_Stress kPa" "0 Length m" "Click here to select..." "False" "False" "False" "False" "True" "9.806 Acceleration m/s²" "50" "50" "False" "" "100 Pressure_Stress kPa" "15 Temperature °C" "6" "1" "False" "ShowLess" "1.79769313486232E+308 Temperature °C" "-273.15 Temperature °C" "200" "50" "5" "5" "1" "50" "6" "" "1" "0.985" "0.1" "1" "1" "0.9" "1" "0.7" "1" "1" "1" "0.985" "0.985" "0.3" "" "1" "True" "True" "True" "False" "FromPrevious" "15 Temperature °C" "Click here to select..." "Click here to select..." "15" "1E-12" "False" "True" "False" "" "0 Mass kg" "0 Volume m³" "" </Values>
+        </Item>
+      </Flownex.Solver.FlowSolver>
+      <IPS.Actions.ActionsTask>
+        <Properties>ActionManager.HighlightRunning ActionManager.HistoryRecordingEnabled ActionManager.Running.DateStarted ActionManager.Running.Duration ActionManager.Running.pScenario.ActionDispData ActionManager.Running.pScenario.AddtionalValData ActionManager.Running.pScenario.Expanded ActionManager.Running.pScenario.ForceFinished ActionManager.Running.pScenario.Identifier ActionManager.Running.pScenario.RunningScenario ActionManager.Running.pScenario.ShouldContinue ActionManager.Running.pScenario.ShouldPause ActionManager.Running.pScenario.ShouldRemove ActionManager.Running.pScenario.ShouldReset ActionManager.Running.pScenario.ShouldResetWithOffset ActionManager.Running.pScenario.ShouldStop ActionManager.Running.pScenario.STargetType ActionManager.Running.pScenario.StartValue ActionManager.Running.pScenario.State ActionManager.Running.pScenario.StopTrigger ActionManager.Running.pScenario.Target ActionManager.Running.pScenario.Trigger ActionManager.Running.pScenario.TriggerRunningTime ActionManager.Running.pScenario.TValueType ActionManager.Running.pScenario.Value ActionManager.ShowAll ActionManager.ShowFinished ActionManager.ShowPaused ActionManager.ShowRunning ActionManager.ShowStopped ActionManager.SnapBeforeRecordingEnabled Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Actions">
+          <Values>  "True" "False" "" "0" "|:|Top|:|Black|:|False|:|9" "" "True" "False" "Recording Scenario" "False" "False" "False" "False" "True" "False" "False" "NONE" "0" "WAITING" "NEVER" "" "0" "0" "NONE" "" "True" "True" "True" "True" "True" "False" "" "{TASK}Actions" "True" "1" "Actions" "0" "" "" </Values>
+        </Item>
+      </IPS.Actions.ActionsTask>
+      <IPS.Alarms.Task>
+        <Properties>Data Identifier IsDefaultTask Manager.DateTimeFormat Manager.ExcelFileName Manager.ExcelRangeAlarmNames Manager.ExcelRangeAutoClear Manager.ExcelRangeComparators Manager.ExcelRangeDescriptions Manager.ExcelRangeDescriptions2 Manager.ExcelRangeEnabled Manager.ExcelRangeEvent Manager.ExcelRangeLevels Manager.ExcelRangeMessages Manager.ExcelRangeMustAck Manager.ExcelRangeNos Manager.ExcelRangeProperties Manager.ExcelRangeValues Manager.MaxAlarms Manager.MuteSirens NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Alarms">
+          <Values>  "" "{TASK}Alarms" "True" "d MMM yyyy HH:mm:ss tt" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "1000" "False" "1" "Alarms" "0" "" "" </Values>
+        </Item>
+      </IPS.Alarms.Task>
+      <IPS.Animation.AnimationTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Animation">
+          <Values>  "" "{TASK}Animation" "True" "1" "Animation" "0" "" "" </Values>
+        </Item>
+      </IPS.Animation.AnimationTask>
+      <IPS.Ansys.AnsysTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Ansys">
+          <Values>  "" "{TASK}Ansys" "True" "1" "Ansys" "0" "" "" </Values>
+        </Item>
+      </IPS.Ansys.AnsysTask>
+      <IPS.Backtracking.Backtracker>
+        <Properties>Data Identifier IsDefaultTask Manager.Enabled Manager.Interval Manager.MaxSnaps Manager.PrefixStartNumber Manager.PreviousSnap Manager.SampledPropertiesEnabled Manager.SpecifyPrefix Manager.StepsToFirstBacktrack Manager.Unit Manager.UseSnapNameAsPrefix NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Backtracker">
+          <Values>  "" "{TASK}Backtracker" "True" "False" "600" "10" "8000" "0" "False" "False" "1" "min" "False" "1" "Backtracker" "0" "" "" </Values>
+        </Item>
+      </IPS.Backtracking.Backtracker>
+      <IPS.DataTransfer.Task.DataTransferTask>
+        <Properties>CanCacheHiddenLinks Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Data Transfer">
+          <Values>  "False" "" "{TASK}Data Transfer" "True" "1" "Data Transfer" "0" "" "" </Values>
+        </Item>
+      </IPS.DataTransfer.Task.DataTransferTask>
+      <IPS.Designer.Designer>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Designer">
+          <Values>  "" "{TASK}Designer" "True" "1" "Designer" "0" "" "" </Values>
+        </Item>
+      </IPS.Designer.Designer>
+      <IPS.EES.EESTask>
+        <Properties>Data EESExecutableLocation Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="EES">
+          <Values>  "" "C:\EES32\EES.exe" "{TASK}EES" "True" "1" "EES" "0" "" "" </Values>
+        </Item>
+      </IPS.EES.EESTask>
+      <IPS.FMI.FMITask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="FMI">
+          <Values>  "" "{TASK}FMI" "True" "1" "FMI" "0" "" "" </Values>
+        </Item>
+      </IPS.FMI.FMITask>
+      <IPS.GAOptimiser.GAOptimiser>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Optimiser">
+          <Values>  "" "{TASK}Optimiser" "True" "1" "Optimiser" "0" "" "" </Values>
+        </Item>
+      </IPS.GAOptimiser.GAOptimiser>
+      <IPS.GlobalParameters.GlobalParametersTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Global Parameters">
+          <Values>  "" "{TASK}Global Parameters" "True" "1" "Global Parameters" "0" "" "" </Values>
+        </Item>
+      </IPS.GlobalParameters.GlobalParametersTask>
+      <IPS.Logger.LoggerTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Logger">
+          <Values>  "" "{TASK}Logger" "True" "1" "Logger" "0" "" "" </Values>
+        </Item>
+      </IPS.Logger.LoggerTask>
+      <IPS.Mathcad.MathcadTask>
+        <Properties>Data Identifier IsDefaultTask MathcadVisible NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Mathcad">
+          <Values>  "" "{TASK}Mathcad" "True" "True" "1" "Mathcad" "0" "" "" </Values>
+        </Item>
+      </IPS.Mathcad.MathcadTask>
+      <IPS.OPCUA.OPCUATask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="OPC UA">
+          <Values>  "" "{TASK}OPC UA" "True" "1" "OPC UA" "0" "" "" </Values>
+        </Item>
+      </IPS.OPCUA.OPCUATask>
+      <IPS.ParameterDisplay.ParameterDisplayTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Parameter Display">
+          <Values>  "" "{TASK}Parameter Display" "True" "1" "Parameter Display" "0" "" "" </Values>
+        </Item>
+      </IPS.ParameterDisplay.ParameterDisplayTask>
+      <IPS.PropertyMonitors.PropertyMonitorsTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="PropertyMonitors">
+          <Values>  "" "{TASK}PropertyMonitors" "True" "1" "PropertyMonitors" "0" "" "" </Values>
+        </Item>
+      </IPS.PropertyMonitors.PropertyMonitorsTask>
+      <IPS.Relap.RelapTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Relap">
+          <Values>  "" "{TASK}Relap" "True" "1" "Relap" "0" "" "" </Values>
+        </Item>
+      </IPS.Relap.RelapTask>
+      <IPS.ResultLayers.ResultLayersTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Result Layers">
+          <Values>  "" "{TASK}Result Layers" "True" "1" "Result Layers" "0" "" "" </Values>
+        </Item>
+      </IPS.ResultLayers.ResultLayersTask>
+      <IPS.ROMBuilder.ROMBuilderTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="ROM Builder">
+          <Values>  "" "{TASK}ROM Builder" "True" "1" "ROM Builder" "0" "" "" </Values>
+        </Item>
+      </IPS.ROMBuilder.ROMBuilderTask>
+      <IPS.ScaleDrawing.ScaleDrawingTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="ScaleDrawing">
+          <Values>  "" "{TASK}ScaleDrawing" "True" "1" "ScaleDrawing" "0" "" "" </Values>
+        </Item>
+      </IPS.ScaleDrawing.ScaleDrawingTask>
+      <IPS.Scheduler.SchedulerImpl>
+        <Properties>Data EndOption EndTime Identifier InitialTimeStepSize IsDefaultTask LastStep MaxTimeStepSize MinTimeStepSize NumberOfThreads OptionRunMode PersistedIdentifierWithTemplate PreviousTime SpeedFactor TID TimeStepControl TimeStepIncFactor TimeStepSize UserDescription </Properties>
+        <Item Index="0" Identifier="Scheduler">
+          <Values>  "" "RunIndefinite" "0 Time s" "{TASK}Scheduler" "0.1 Time s" "True" "0" "100 Time s" "0.0001 Time s" "1" "FastAsPossible" "Scheduler" "0" "100" "" "Constant" "1.1" "100 Time ms" "" </Values>
+        </Item>
+      </IPS.Scheduler.SchedulerImpl>
+      <IPS.Scripting.ScriptTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Scripting">
+          <Values>  "" "{TASK}Scripting" "True" "1" "Scripting" "0" "" "" </Values>
+        </Item>
+      </IPS.Scripting.ScriptTask>
+      <IPS.Sensitivity.SensitivityAnalysis>
+        <Properties>Data Identifier IsDefaultTask NumberInstances NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Sensitivity Analysis">
+          <Values>  "" "{TASK}Sensitivity Analysis" "True" "1" "1" "Sensitivity Analysis" "0" "" "" </Values>
+        </Item>
+      </IPS.Sensitivity.SensitivityAnalysis>
+      <IPS.SixSigma.SixSigmaTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="6SigmaDCX">
+          <Values>  "" "{TASK}6SigmaDCX" "True" "1" "6SigmaDCX" "0" "" "" </Values>
+        </Item>
+      </IPS.SixSigma.SixSigmaTask>
+      <IPS.TextFileLink.TextFileLink>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Text File Link">
+          <Values>  "" "{TASK}Text File Link" "True" "1" "Text File Link" "0" "" "" </Values>
+        </Item>
+      </IPS.TextFileLink.TextFileLink>
+      <IPS.VideoRecorder.VideoRecorderTask>
+        <Properties>Data Identifier IsDefaultTask MaxScreenRecordFrameRate NumberOfThreads PersistedIdentifierWithTemplate PreviousTime RecordScreenAsVideo ResultingFramerate ScreenRecordEndTime ScreenRecordQuality ScreenRecordStartTime StopScreenRecordOnDeactivate TID UserDescription </Properties>
+        <Item Index="0" Identifier="Video Recorder">
+          <Values>  "" "{TASK}Video Recorder" "True" "10" "1" "Video Recorder" "0" "False" "0" "0 Time s" "70 Efficiency %" "0 Time s" "True" "" "" </Values>
+        </Item>
+      </IPS.VideoRecorder.VideoRecorderTask>
+      <IPS.Visualisation.Graphing.GraphTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Graphing">
+          <Values>  "" "{TASK}Graphing" "True" "1" "Graphing" "0" "" "" </Values>
+        </Item>
+      </IPS.Visualisation.Graphing.GraphTask>
+      <IPS.WordReporting.WordReportingTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="MS Word Reporting">
+          <Values>  "" "{TASK}MS Word Reporting" "True" "1" "MS Word Reporting" "0" "" "" </Values>
+        </Item>
+      </IPS.WordReporting.WordReportingTask>
+      <IPS.Xcel.ExcelTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Excel">
+          <Values>  "" "{TASK}Excel" "True" "1" "Excel" "0" "" "" </Values>
+        </Item>
+      </IPS.Xcel.ExcelTask>
+      <IPS.XcelInputSheets.InputSheetsTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Excel InputSheets">
+          <Values>  "" "{TASK}Excel InputSheets" "True" "1" "Excel InputSheets" "0" "" "" </Values>
+        </Item>
+      </IPS.XcelInputSheets.InputSheetsTask>
+      <IPS.XcelReporting.ReportingTask>
+        <Properties>Data DefaultReportOn Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="Excel Reporting">
+          <Values>  "" "True" "{TASK}Excel Reporting" "True" "1" "Excel Reporting" "0" "" "" </Values>
+        </Item>
+      </IPS.XcelReporting.ReportingTask>
+      <OPCDriver.OPCTask>
+        <Properties>Data Identifier IsDefaultTask NumberOfThreads PersistedIdentifierWithTemplate PreviousTime TID UserDescription </Properties>
+        <Item Index="0" Identifier="OPCTask">
+          <Values>  "" "{TASK}OPCTask" "True" "1" "OPCTask" "0" "" "" </Values>
+        </Item>
+      </OPCDriver.OPCTask>
+    </ListItems>
+  </IPS.Core.TaskList>
+</IPS>

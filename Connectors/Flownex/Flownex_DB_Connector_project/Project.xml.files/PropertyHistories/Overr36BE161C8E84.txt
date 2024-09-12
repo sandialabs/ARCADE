@@ -1,0 +1,6 @@
+Override-Switch-DataBroker-Actuator_1
+
+{Connectable Inputs}Toggle
+Sample based. Number of Samples : 100, SampleRate: 10
+Run  Time [s]         
+000, 0.00000000E+000,  0.00000000E+000

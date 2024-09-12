@@ -1,0 +1,44 @@
+Operating system: Microsoft Windows 11 Enterprise
+Logged in user name: ashahn
+Machine name: S1108746
+User:  Time: 13/08/2024 16:06:20 Simulation Time: 00h  00m  00s  000ms Close page: Pages\Drawing Page(1).page
+User:  Time: 13/08/2024 16:06:20 Simulation Time: 00h  00m  00s  000ms Open page: Pages\Drawing Page(1).page
+User:  Time: 13/08/2024 16:06:20 Simulation Time: 00h  00m  00s  000ms Open page: Pages\Drawing Page(1).page
+User: Engineer Time: 13/08/2024 16:06:38 Simulation Time: 00h  00m  00s  000ms Open page: Pages\Drawing Page(1).page
+User: Engineer Time: 13/08/2024 16:06:47 Simulation Time: 00h  00m  00s  000ms Paste DataBroker 
+User: Engineer Time: 13/08/2024 16:08:24 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.IN_List.[0] Sensor_1
+User: Engineer Time: 13/08/2024 16:08:30 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.IN_List.[1] Sensor_2
+User: Engineer Time: 13/08/2024 16:08:36 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.IN_List.[2] Sensor_3
+User: Engineer Time: 13/08/2024 16:08:36 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.IN_List IPS.Properties.List`1[IPS.Properties.Text]
+User: Engineer Time: 13/08/2024 16:08:45 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.IN_List IPS.Properties.List`1[IPS.Properties.Text]
+User: Engineer Time: 13/08/2024 16:09:25 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.OUT_List.[0] Actuator_1
+User: Engineer Time: 13/08/2024 16:09:33 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.OUT_List.[1] Actuator_2
+User: Engineer Time: 13/08/2024 16:09:33 Simulation Time: 00h  00m  00s  000ms Set property value: DataBroker ScriptWrapper.CompiledScript.OUT_List IPS.Properties.List`1[IPS.Properties.Text]
+User: Engineer Time: 13/08/2024 16:10:30 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:10:31 Simulation Time: 00h  00m  00s  000ms Deselect all on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:10:50 Simulation Time: 00h  00m  00s  000ms Paste Box-Override-Switch-RPS-Trip-Manipulated-CirculatorA Copy(004) Override-Switch-DataBroker-PV-TurbineValve-Opening IO Box - 256 Copy(007) IO Box - 257 Copy(007) 
+User: Engineer Time: 13/08/2024 16:10:52 Simulation Time: 00h  00m  00s  000ms Move elements Box-Override-Switch-RPS-Trip-Manipulated-CirculatorA Copy(004) Override-Switch-DataBroker-PV-TurbineValve-Opening IO Box - 256 Copy(007) IO Box - 257 Copy(007) 
+User: Engineer Time: 13/08/2024 16:10:53 Simulation Time: 00h  00m  00s  000ms Deselect all on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:10:55 Simulation Time: 00h  00m  00s  000ms Select Box-Override-Switch-RPS-Trip-Manipulated-CirculatorA Copy(004) - View1 on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:00 Simulation Time: 00h  00m  00s  000ms Delete Box-Override-Switch-RPS-Trip-Manipulated-CirculatorA Copy(004) 
+User: Engineer Time: 13/08/2024 16:11:02 Simulation Time: 00h  00m  00s  000ms Select Override-Switch-DataBroker-PV-TurbineValve-Opening - View1 on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:18 Simulation Time: 00h  00m  00s  000ms Set property value: Override-Switch-DataBroker-Actuator_1 Identifier Override-Switch-DataBroker-Actuator_1
+User: Engineer Time: 13/08/2024 16:11:18 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:19 Simulation Time: 00h  00m  00s  000ms Deselect all on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:25 Simulation Time: 00h  00m  00s  000ms Select Double_DoubleLink - 243 -  on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:26 Simulation Time: 00h  00m  00s  000ms Deselect all on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:45 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:11:45 Simulation Time: 00h  00m  00s  000ms Insert Element Specific Double Property - 0 
+User: Engineer Time: 13/08/2024 16:12:03 Simulation Time: 00h  00m  00s  000ms Set property value: Actuation_Source Identifier Actuation_Source
+User: Engineer Time: 13/08/2024 16:12:03 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:05 Simulation Time: 00h  00m  00s  000ms Move elements Actuation_Source 
+User: Engineer Time: 13/08/2024 16:12:08 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:08 Simulation Time: 00h  00m  00s  000ms Insert Element Specific Double Property - 1 
+User: Engineer Time: 13/08/2024 16:12:24 Simulation Time: 00h  00m  00s  000ms Set property value: Actuator_Destination Identifier Actuator_Destination
+User: Engineer Time: 13/08/2024 16:12:24 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:24 Simulation Time: 00h  00m  00s  000ms Deselect all on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:26 Simulation Time: 00h  00m  00s  000ms Open page: Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:30 Simulation Time: 00h  00m  00s  000ms Select Override-Switch-DataBroker-Actuator_1 - View1 and IO Box - 256 Copy(007) - View1 and IO Box - 257 Copy(007) - View1 and Double_DoubleLink - 210 -  and Double_DoubleLink - 243 -  and Actuation_Source - View1 and Actuator_Destination - View1 on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:31 Simulation Time: 00h  00m  00s  000ms Move elements Override-Switch-DataBroker-Actuator_1 IO Box - 256 Copy(007) IO Box - 257 Copy(007) Actuation_Source Actuator_Destination 
+User: Engineer Time: 13/08/2024 16:12:32 Simulation Time: 00h  00m  00s  000ms Deselect all on Pages\DataBroker.page
+User: Engineer Time: 13/08/2024 16:12:57 Simulation Time: 00h  00m  00s  000ms Close page: Pages\DataBroker.page

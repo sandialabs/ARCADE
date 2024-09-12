@@ -1,0 +1,156 @@
+<?xml version="1.0" standalone="yes"?>
+<IPS>
+  <Library Name="IPS" Version="8.16.0.5518" />
+  <Library Name="CapeOpenFluidGenerator" Version="1.0.8873.0" />
+  <Library Name="DCS" Version="8.16.0.0" />
+  <Library Name="ElectricalNetworkSolver" Version="8.16.0.0" />
+  <Library Name="Flownex" Version="8.16.0.0" />
+  <Library Name="ForceCalculations" Version="1.0.8873.0" />
+  <Library Name="IPS.Actions" Version="8.16.0.0" />
+  <Library Name="IPS.Alarms" Version="8.16.0.0" />
+  <Library Name="IPS.Ansys" Version="8.16.0.0" />
+  <Library Name="IPS.Backtracking" Version="8.16.0.0" />
+  <Library Name="IPS.CAESAR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.DataTransfer" Version="8.16.0.0" />
+  <Library Name="IPS.Designer" Version="8.16.0.0" />
+  <Library Name="IPS.EES" Version="8.16.0.0" />
+  <Library Name="IPS.Excel" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelInputSheets" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelReporting" Version="8.16.0.0" />
+  <Library Name="IPS.Exposers" Version="8.16.0.0" />
+  <Library Name="IPS.FMI" Version="8.16.0.0" />
+  <Library Name="IPS.GAOptimiser" Version="8.16.0.0" />
+  <Library Name="IPS.GlobalParameters" Version="8.16.0.0" />
+  <Library Name="IPS.Logger" Version="8.16.0.0" />
+  <Library Name="IPS.Mathcad" Version="8.16.0.0" />
+  <Library Name="IPS.OPCDriver" Version="8.16.0.0" />
+  <Library Name="IPS.OPCUA" Version="1.0.0.0" />
+  <Library Name="IPS.ParameterDisplay" Version="8.16.0.0" />
+  <Library Name="IPS.PropertyMonitor" Version="8.16.0.0" />
+  <Library Name="IPS.Relap" Version="8.16.0.0" />
+  <Library Name="IPS.ROHR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.ROMBuilder" Version="8.16.0.0" />
+  <Library Name="IPS.ScaleDrawing" Version="8.16.0.0" />
+  <Library Name="IPS.Scheduler" Version="8.16.0.0" />
+  <Library Name="IPS.Scripting" Version="8.16.0.0" />
+  <Library Name="IPS.SensitivityAnalysis" Version="8.16.0.0" />
+  <Library Name="IPS.SixSigma" Version="8.16.0.0" />
+  <Library Name="IPS.TextFileLink" Version="8.16.0.0" />
+  <Library Name="IPS.Tools" Version="8.16.0.0" />
+  <Library Name="IPS.VideoRecorder" Version="1.0.0.0" />
+  <Library Name="IPS.Visualisation" Version="8.16.0.0" />
+  <Library Name="IPS.WordReporting" Version="8.16.0.0" />
+  <Library Name="NistFluidGenerator" Version="1.0.8873.0" />
+  <System.Collections.Generic.List_HEX60_1>
+    <ListItems>
+      <IPS.Alarms.Settings>
+        <Properties>L0.AckTrigStyle.BackColor L0.AckTrigStyle.ForeColor L0.SirenFile L0.Tag L0.UnAckOkStyle.BackColor L0.UnAckOkStyle.ForeColor L0.UnAckTrigStyle.BackColor L0.UnAckTrigStyle.ForeColor L1.AckTrigStyle.BackColor L1.AckTrigStyle.ForeColor L1.SirenFile L1.Tag L1.UnAckOkStyle.BackColor L1.UnAckOkStyle.ForeColor L1.UnAckTrigStyle.BackColor L1.UnAckTrigStyle.ForeColor L2.AckTrigStyle.BackColor L2.AckTrigStyle.ForeColor L2.SirenFile L2.Tag L2.UnAckOkStyle.BackColor L2.UnAckOkStyle.ForeColor L2.UnAckTrigStyle.BackColor L2.UnAckTrigStyle.ForeColor L3.AckTrigStyle.BackColor L3.AckTrigStyle.ForeColor L3.SirenFile L3.Tag L3.UnAckOkStyle.BackColor L3.UnAckOkStyle.ForeColor L3.UnAckTrigStyle.BackColor L3.UnAckTrigStyle.ForeColor UpdateInterval </Properties>
+        <Item Index="0">
+          <Values>  "White" "Black" "C:\Program Files\Flownex SE 8.16.0.5518\Master\Library\IPS.Alarms\Level0.wav" "Level 0" "White" "Black" "White" "Black" "Yellow" "Black" "C:\Program Files\Flownex SE 8.16.0.5518\Master\Library\IPS.Alarms\Level1.wav" "Level 1" "Green" "Black" "White" "Black" "Orange" "Black" "C:\Program Files\Flownex SE 8.16.0.5518\Master\Library\IPS.Alarms\Level2.wav" "Level 2" "Green" "Black" "White" "Black" "Red" "Black" "C:\Program Files\Flownex SE 8.16.0.5518\Master\Library\IPS.Alarms\Level3.wav" "Level 3" "Green" "Black" "White" "Black" "333" </Values>
+        </Item>
+      </IPS.Alarms.Settings>
+      <IPS.Animation.Settings>
+        <Properties>Flicker </Properties>
+        <Item Index="0">
+          <Values>  "10" </Values>
+        </Item>
+      </IPS.Animation.Settings>
+      <IPS.DataTransfer.Settings>
+        <Properties>GiveErrorOnInfinity GiveErrorOnNAN GiveWarningOnInfinity GiveWarningOnNAN PauseOnErrorOrWarning ShowHiddenTransferMessages ShowInitialisationMessages </Properties>
+        <Item Index="0">
+          <Values>  "True" "True" "True" "True" "True" "True" "True" </Values>
+        </Item>
+      </IPS.DataTransfer.Settings>
+      <IPS.Tools.IDDrawingTextSettings>
+        <Properties>DescriptionDisplayLocation DisplayDescription DisplayIdentifier DisplayMultipleViews IDDisplayLocation </Properties>
+        <Item Index="0">
+          <Values>  "Top" "False" "True" "True" "Bottom" </Values>
+        </Item>
+      </IPS.Tools.IDDrawingTextSettings>
+      <IPS.Visualisation.DialSettings>
+        <Properties>AmountOfDegrees DialStyle NeedleCenter NeedleHeight NeedleStyle NeedleWidth ReadOnly StartDegrees </Properties>
+        <Item Index="0">
+          <Values>  "360" "*F*Gradient;Horizontal1;;White;Gray;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "0" "40" "*F*Solid;Horizontal1;;Red;Gray;100*/F**S*DarkGray;Solid;0*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "3" "False" "0" </Values>
+        </Item>
+      </IPS.Visualisation.DialSettings>
+      <IPS.Visualisation.EllipseSettings>
+        <Properties>Style </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;LightBlue;Blue;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.EllipseSettings>
+      <IPS.Visualisation.Graphing.GraphExportSettings>
+        <Properties>FormatOption Height Width </Properties>
+        <Item Index="0">
+          <Values>  "Png" "420" "595" </Values>
+        </Item>
+      </IPS.Visualisation.Graphing.GraphExportSettings>
+      <IPS.Visualisation.Graphing.GraphFormatting>
+        <Properties>AutoScaleText AxisLabelFont BackColor BorderColor EntireNameInLegend ForegroundColor GraphFont Image LegendBackColor LegendBorderColor LegendForegroundColor TitleFont </Properties>
+        <Item Index="0">
+          <Values>  "False" "Arial, 8pt" "White" "White" "False" "DarkSlateGray" "Arial, 8pt" "" "White" "Transparent" "DarkSlateGray" "Arial, 12pt" </Values>
+        </Item>
+      </IPS.Visualisation.Graphing.GraphFormatting>
+      <IPS.Visualisation.Graphing.GraphLineProperties>
+        <Properties>Color1 Color10 Color11 Color12 Color13 Color14 Color15 Color16 Color17 Color18 Color19 Color2 Color20 Color3 Color4 Color5 Color6 Color7 Color8 Color9 </Properties>
+        <Item Index="0">
+          <Values>  "SteelBlue" "RoyalBlue" "DarkOrchid" "Tomato" "LightSeaGreen" "Orange" "SlateGray" "DarkOliveGreen" "Sienna" "MediumSeaGreen" "DarkGoldenrod" "Firebrick" "DarkSlateGray" "SeaGreen" "LightSlateGray" "Indigo" "Chocolate" "Teal" "DarkRed" "DimGray" </Values>
+        </Item>
+      </IPS.Visualisation.Graphing.GraphLineProperties>
+      <IPS.Visualisation.Graphing.GraphProperties>
+        <Properties>DrawMode MaxVideoFrameRate Optimised RecordGraphAsVideo RunBasedLength SampleBasedLength SampleBasedRate ShowLegend StopVideoOnDeactivate TimeBasedLength TimeBasedRate TitleText TooltipLabelMode VideoEndTime VideoQuality VideoStartTime XAxisAutoGridSpacing XAxisAutoScaling XAxisDecimalPlaces XAxisGridSpacing XAxisLogScale XAxisMax XAxisMin XAxisNumberOfBuckets XAxisTitle XAxisUnit XAxisUnitGroup XFlowPathPointsSpacing XGrid YAxesDisplayed YAxisAutoGridSpacing YAxisAutoScaling YAxisAutoZoomPan YAxisGridSpacing YAxisLogScale YAxisMax YAxisMin YAxisTitle YAxisUnitGroup YAxisUnitH YGrid </Properties>
+        <Item Index="0">
+          <Values>  "SampleBased" "10" "True" "False" "50" "10000" "1" "True" "True" "100 Time s" "0.1 Time s" "" "ShowCommonForAllSeries" "0 Time s" "70 Efficiency %" "0 Time s" "True" "True" "10" "1" "False" "10" "0" "10" "" "" "None" "BasedOnComponentLength" "False" "One" "True" "True" "True" "1" "False" "10" "-10" "" "None" "" "True" </Values>
+        </Item>
+      </IPS.Visualisation.Graphing.GraphProperties>
+      <IPS.Visualisation.InputOutputSettings>
+        <Properties>DecimalPlaces IsCaptionVisible IsUnitVisible ReadOnly Style UseFormatString UseShortDefaultCaption ValueFormat ValueFormatString </Properties>
+        <Item Index="0">
+          <Values>  "3" "True" "True" "False" "*F*Solid;Horizontal1;;Transparent;Gray;100*/F**S*DarkGray;Solid;0*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "False" "True" "F:Fixed" "F3" </Values>
+        </Item>
+      </IPS.Visualisation.InputOutputSettings>
+      <IPS.Visualisation.PolygonSettings>
+        <Properties>Style </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;LightBlue;Blue;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.PolygonSettings>
+      <IPS.Visualisation.ProgressBarSettings>
+        <Properties>BarStyle ProgressStyle </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;White;Gray;100*/F**S*Black;Solid;2*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "*F*Solid;Horizontal1;;White;Gray;100*/F**S*DarkGray;Solid;0*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.ProgressBarSettings>
+      <IPS.Visualisation.PushButtonSettings>
+        <Properties>PressedStyle ResetTime UnpressedStyle </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;White;ButtonFace;100*/F**S*DarkGray;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;PRESSED*/T*" "1000" "*F*Gradient;Horizontal1;;ButtonFace;White;100*/F**S*DarkGray;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;UNPRESSED*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.PushButtonSettings>
+      <IPS.Visualisation.RectangleSettings>
+        <Properties>Style </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;LightBlue;Blue;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.RectangleSettings>
+      <IPS.Visualisation.TextSettings>
+        <Properties>CollapsedStyle DisplayText PinHeight PinWidth Style </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;White;Gray;100*/F**S*DarkGray;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "Double click and type your text here" "10" "10" "*F*Solid;Horizontal1;;Transparent;Gray;100*/F**S*DarkGray;Solid;0*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.TextSettings>
+      <IPS.Visualisation.ToggleButtonSettings>
+        <Properties>OffStyle OnStyle ToggleStyle </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;White;ButtonFace;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;OFF*/T*" "*F*Gradient;Horizontal1;;ButtonFace;White;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;ON*/T*" "*F*Solid;Horizontal1;;ButtonFace;Gray;100*/F**S*DarkGray;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;TOGGLE*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.ToggleButtonSettings>
+      <IPS.Visualisation.TrackBarSettings>
+        <Properties>BackStyle BarStyle ReadOnly TrackbarHeight TrackbarWidth TrackStyle </Properties>
+        <Item Index="0">
+          <Values>  "*F*Gradient;Horizontal1;;White;ButtonFace;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "*F*Solid;Horizontal1;;Black;Gray;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "False" "80" "10" "*F*Gradient;Vertical1;;White;ButtonShadow;100*/F**S*Black;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" </Values>
+        </Item>
+      </IPS.Visualisation.TrackBarSettings>
+    </ListItems>
+  </System.Collections.Generic.List_HEX60_1>
+</IPS>

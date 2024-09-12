@@ -1,0 +1,15 @@
+#!/bin/sh -e
+#
+#  rc.local
+
+#ifconfig ens1 up
+#ifconfig ens1 30.0.1.20 netmask 255.255.255.0
+service mysql stop
+mkdir /var/run/mysqld
+export JAVA_HOME=/usr/local/openjdk-11
+mysqld_safe --user=root &
+
+#Create scadalts database
+#mysql -u root -p -D mysql -e 'CREATE DATABASE IF NOT EXISTS scadalts'
+bash /usr/local/tomcat/bin/catalina.sh run &
+exit 0

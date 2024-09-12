@@ -1,0 +1,42 @@
+{
+    "Simulator": [
+        {
+            "executableName": "ans_simdiag_15jul21",
+            "hold_for_dante": "false"
+        }
+    ],
+    "Endpoints": [
+        {
+            "Node": "SGP_RCP_SGL_Controller",
+            "IP_Host": "30.0.1.5",
+            "PLCS":[
+                {
+                    "IP_PLC": "30.0.1.15",
+                    "Proto": "Modbus",
+                    "SensorTags": "SG1_Press,SG2_Press,RX_ReactorPower",
+                    "SensorMem": "2052,2054,2056",
+                    "ActuatorTags": "TB_IsoValveCmd",
+                    "ActuatorMem": "2058",
+                    "ScanTime": "0.1",
+                    "TimeMem": "2048",
+                    "MemFormat": "32_float",
+                    "Endianess":"big,big",
+                    "Port":"502"
+                },
+                {
+                    "IP_PLC": "30.0.1.10",
+                    "Proto": "Modbus",
+                    "SensorTags": "RC1_PumpFlow",
+                    "SensorMem": "2052",
+                    "ActuatorTags": "RC1_PumpSpeedCmd",
+                    "ActuatorMem": "2054",
+                    "ScanTime": "0.1",
+                    "TimeMem": "2048",
+                    "MemFormat": "32_float",
+                    "Endianess":"big,big",
+                    "Port":"502"
+                }
+            ]
+        }
+    ]
+}

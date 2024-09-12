@@ -1,0 +1,177 @@
+<?xml version="1.0" standalone="yes"?>
+<IPS>
+  <Library Name="IPS" Version="8.16.0.5518" />
+  <Library Name="CapeOpenFluidGenerator" Version="1.0.8873.0" />
+  <Library Name="DCS" Version="8.16.0.0" />
+  <Library Name="ElectricalNetworkSolver" Version="8.16.0.0" />
+  <Library Name="Flownex" Version="8.16.0.0" />
+  <Library Name="ForceCalculations" Version="1.0.8873.0" />
+  <Library Name="IPS.Actions" Version="8.16.0.0" />
+  <Library Name="IPS.Alarms" Version="8.16.0.0" />
+  <Library Name="IPS.Ansys" Version="8.16.0.0" />
+  <Library Name="IPS.Backtracking" Version="8.16.0.0" />
+  <Library Name="IPS.CAESAR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.DataTransfer" Version="8.16.0.0" />
+  <Library Name="IPS.Designer" Version="8.16.0.0" />
+  <Library Name="IPS.EES" Version="8.16.0.0" />
+  <Library Name="IPS.Excel" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelInputSheets" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelReporting" Version="8.16.0.0" />
+  <Library Name="IPS.Exposers" Version="8.16.0.0" />
+  <Library Name="IPS.FMI" Version="8.16.0.0" />
+  <Library Name="IPS.GAOptimiser" Version="8.16.0.0" />
+  <Library Name="IPS.GlobalParameters" Version="8.16.0.0" />
+  <Library Name="IPS.Logger" Version="8.16.0.0" />
+  <Library Name="IPS.Mathcad" Version="8.16.0.0" />
+  <Library Name="IPS.OPCDriver" Version="8.16.0.0" />
+  <Library Name="IPS.OPCUA" Version="1.0.0.0" />
+  <Library Name="IPS.ParameterDisplay" Version="8.16.0.0" />
+  <Library Name="IPS.PropertyMonitor" Version="8.16.0.0" />
+  <Library Name="IPS.Relap" Version="8.16.0.0" />
+  <Library Name="IPS.ROHR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.ROMBuilder" Version="8.16.0.0" />
+  <Library Name="IPS.ScaleDrawing" Version="8.16.0.0" />
+  <Library Name="IPS.Scheduler" Version="8.16.0.0" />
+  <Library Name="IPS.Scripting" Version="8.16.0.0" />
+  <Library Name="IPS.SensitivityAnalysis" Version="8.16.0.0" />
+  <Library Name="IPS.SixSigma" Version="8.16.0.0" />
+  <Library Name="IPS.TextFileLink" Version="8.16.0.0" />
+  <Library Name="IPS.Tools" Version="8.16.0.0" />
+  <Library Name="IPS.VideoRecorder" Version="1.0.0.0" />
+  <Library Name="IPS.Visualisation" Version="8.16.0.0" />
+  <Library Name="IPS.WordReporting" Version="8.16.0.0" />
+  <Library Name="NistFluidGenerator" Version="1.0.8873.0" />
+  <Script>
+    <Properties>Simulation_Time Time_Step </Properties>
+    <Values>  "2020.29999999926" "0.1" </Values>
+    <List Name="IN_List">
+      <IPS.Properties.List_HEX60_1>
+        <ListItems>
+          <IPS.Properties.Text>
+            <Properties>Value </Properties>
+            <Item Index="0">
+              <Values>  "Sensor_1" </Values>
+            </Item>
+            <Item Index="1">
+              <Values>  "Sensor_2" </Values>
+            </Item>
+            <Item Index="2">
+              <Values>  "Sensor_3" </Values>
+            </Item>
+          </IPS.Properties.Text>
+        </ListItems>
+      </IPS.Properties.List_HEX60_1>
+    </List>
+    <List Name="OUT_List">
+      <IPS.Properties.List_HEX60_1>
+        <ListItems>
+          <IPS.Properties.Text>
+            <Properties>Value </Properties>
+            <Item Index="0">
+              <Values>  "Actuator_1" </Values>
+            </Item>
+            <Item Index="1">
+              <Values>  "Actuator_2" </Values>
+            </Item>
+          </IPS.Properties.Text>
+        </ListItems>
+      </IPS.Properties.List_HEX60_1>
+    </List>
+    <List Name="OUT_Val">
+      <IPS.Properties.List_HEX60_1>
+        <ListItems>
+          <IPS.Properties.Double>
+            <Properties>Value </Properties>
+            <Item Index="0">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="1">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="2">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="3">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="4">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="5">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="6">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="7">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="8">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="9">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="10">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="11">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="12">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="13">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="14">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="15">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="16">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="17">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="18">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="19">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="20">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="21">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="22">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="23">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="24">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="25">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="26">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="27">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+            <Item Index="28">
+              <Values>  "-100000000000000" </Values>
+            </Item>
+          </IPS.Properties.Double>
+        </ListItems>
+      </IPS.Properties.List_HEX60_1>
+    </List>
+  </Script>
+</IPS>

@@ -1,0 +1,12 @@
+#!/bin/sh -e
+#
+#  rc.local
+
+#ifconfig ens1 up
+#ifconfig ens1 30.0.1.25 netmask 255.255.255.0
+#cd /workdir
+#bash /workdir/start_openplc.sh &
+cd /opt/DB
+#python3 /opt/DB/EndPoint.py 
+#/opt/DB/DB
+exit 0

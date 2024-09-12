@@ -1,0 +1,99 @@
+<?xml version="1.0" standalone="yes"?>
+<IPS>
+  <Library Name="IPS" Version="8.16.0.5518" />
+  <Library Name="CapeOpenFluidGenerator" Version="1.0.8873.0" />
+  <Library Name="DCS" Version="8.16.0.0" />
+  <Library Name="ElectricalNetworkSolver" Version="8.16.0.0" />
+  <Library Name="Flownex" Version="8.16.0.0" />
+  <Library Name="ForceCalculations" Version="1.0.8873.0" />
+  <Library Name="IPS.Actions" Version="8.16.0.0" />
+  <Library Name="IPS.Alarms" Version="8.16.0.0" />
+  <Library Name="IPS.Ansys" Version="8.16.0.0" />
+  <Library Name="IPS.Backtracking" Version="8.16.0.0" />
+  <Library Name="IPS.CAESAR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.DataTransfer" Version="8.16.0.0" />
+  <Library Name="IPS.Designer" Version="8.16.0.0" />
+  <Library Name="IPS.EES" Version="8.16.0.0" />
+  <Library Name="IPS.Excel" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelInputSheets" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelReporting" Version="8.16.0.0" />
+  <Library Name="IPS.Exposers" Version="8.16.0.0" />
+  <Library Name="IPS.FMI" Version="8.16.0.0" />
+  <Library Name="IPS.GAOptimiser" Version="8.16.0.0" />
+  <Library Name="IPS.GlobalParameters" Version="8.16.0.0" />
+  <Library Name="IPS.Logger" Version="8.16.0.0" />
+  <Library Name="IPS.Mathcad" Version="8.16.0.0" />
+  <Library Name="IPS.OPCDriver" Version="8.16.0.0" />
+  <Library Name="IPS.OPCUA" Version="1.0.0.0" />
+  <Library Name="IPS.ParameterDisplay" Version="8.16.0.0" />
+  <Library Name="IPS.PropertyMonitor" Version="8.16.0.0" />
+  <Library Name="IPS.Relap" Version="8.16.0.0" />
+  <Library Name="IPS.ROHR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.ROMBuilder" Version="8.16.0.0" />
+  <Library Name="IPS.ScaleDrawing" Version="8.16.0.0" />
+  <Library Name="IPS.Scheduler" Version="8.16.0.0" />
+  <Library Name="IPS.Scripting" Version="8.16.0.0" />
+  <Library Name="IPS.SensitivityAnalysis" Version="8.16.0.0" />
+  <Library Name="IPS.SixSigma" Version="8.16.0.0" />
+  <Library Name="IPS.TextFileLink" Version="8.16.0.0" />
+  <Library Name="IPS.Tools" Version="8.16.0.0" />
+  <Library Name="IPS.VideoRecorder" Version="1.0.0.0" />
+  <Library Name="IPS.Visualisation" Version="8.16.0.0" />
+  <Library Name="IPS.WordReporting" Version="8.16.0.0" />
+  <Library Name="NistFluidGenerator" Version="1.0.8873.0" />
+  <IPS.Server.ProjectImpl>
+    <Properties>BatchRunExternallyControlled HasErrors HasWarnings IsRunningBatches PluginElementManager.Content PreviousBatchRunsRunNumber PropertyProvider.HistoryManager RunNumber SaveRunHistories SimulationTime </Properties>
+    <Values>  "False" "True" "True" "False" "" "0" "PropertyHistories" "0" "False" "0" </Values>
+    <List Name="PluginElementManager.ManagedComponents">
+      <IPS.Core.ComponentList>
+        <ListItems>
+          <DCS.Components.Analog.switches.ToggleSwitch>
+            <Properties>ExecutionSequenceNumber Identifier Input1 Input1Bias Input1Gain Input2 Input2Bias Input2Gain InternalTimer Output OwnerTaskID PersistedIdentifierWithTemplate Pre_Toggle TID Time1to2 Time2to1 Toggle UserDescription WorldPosition.X WorldPosition.Y WorldPosition.Z </Properties>
+            <Item Index="0" Identifier="Override-Switch-DataBroker-Actuator_1">
+              <Values>  "1103" "{COMPONENT}Override-Switch-DataBroker-Actuator_1" "0" "0" "1" "84.5683850969488" "0" "1" "0" "84.5680478082112" "" "Override-Switch-DataBroker-Actuator_1" "0" "" "0" "0" "0" "" "0" "0" "0" </Values>
+            </Item>
+          </DCS.Components.Analog.switches.ToggleSwitch>
+          <DCS.Components.Properties.SP_Dbl_Property>
+            <Properties>Identifier OwnerTaskID PersistedIdentifierWithTemplate SProp TID UserDescription Value WorldPosition.X WorldPosition.Y WorldPosition.Z </Properties>
+            <Item Index="0" Identifier="Actuation_Source">
+              <Values>  "{COMPONENT}Actuation_Source" "" "Actuation_Source" "None|:|None" "" "" "0" "0" "0" "0" </Values>
+            </Item>
+            <Item Index="1" Identifier="Actuator_Destination">
+              <Values>  "{COMPONENT}Actuator_Destination" "" "Actuator_Destination" "None|:|None" "" "" "0.845680478082112" "0" "0" "0" </Values>
+            </Item>
+          </DCS.Components.Properties.SP_Dbl_Property>
+          <Flownex.Scripting.FNXScriptComponent>
+            <Properties>bEncrypted bUseRepositoryScript Identifier LibraryName OwnerTaskID Password PersistedIdentifierWithTemplate RepositoryScript ScriptWrapper TID UserDescription WorldPosition.X WorldPosition.Y WorldPosition.Z </Properties>
+            <Item Index="0" Identifier="DataBroker">
+              <Values>  "False" "False" "{COMPONENT}DataBroker" "" "" "" "DataBroker" "Click here to select..." "DataBroker" "" "" "0" "0" "0" </Values>
+            </Item>
+          </Flownex.Scripting.FNXScriptComponent>
+          <IPS.Visualisation.InputOutput>
+            <Properties>CaptionText DecimalPlaces Identifier IsCaptionVisible IsUnitVisible Mode OwnerTaskID PersistedIdentifierWithTemplate ReadOnly SpecificProperty Style.AnimationEnabled Style.Default Style.SpecificProperty TID UseFormatString UseOwnCaption UserDescription UseShortDefaultCaption ValueFormat ValueFormatString WorldPosition.X WorldPosition.Y WorldPosition.Z </Properties>
+            <Item Index="0" Identifier="IO Box - 256 Copy(007)">
+              <Values>  "Empty" "3" "{COMPONENT}IO Box - 256 Copy(007)" "True" "True" "Wrap" "" "IO Box - 256 Copy(007)" "False" "{COMPONENT}Override-Switch-DataBroker-Actuator_1|:|Toggle" "False" "*F*Solid;Horizontal1;;Transparent;Gray;100*/F**S*DarkGray;Solid;0*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "None|:|None" "" "False" "False" "" "True" "Fixed" "F3" "0" "0" "0" </Values>
+            </Item>
+            <Item Index="1" Identifier="IO Box - 257 Copy(007)">
+              <Values>  "Empty" "3" "{COMPONENT}IO Box - 257 Copy(007)" "True" "True" "Wrap" "" "IO Box - 257 Copy(007)" "False" "{COMPONENT}Override-Switch-DataBroker-Actuator_1|:|Output" "False" "*F*Solid;Horizontal1;;Transparent;Gray;100*/F**S*DarkGray;Solid;0*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "None|:|None" "" "False" "False" "" "True" "Fixed" "F3" "0" "0" "0" </Values>
+            </Item>
+          </IPS.Visualisation.InputOutput>
+        </ListItems>
+      </IPS.Core.ComponentList>
+    </List>
+    <List Name="PluginElementManager.ManagedLinks">
+      <IPS.Core.LinkList>
+        <ListItems>
+          <DCS.Links.Double_DoubleLink>
+            <Properties>BiasValue Enable EndPortName EndPortParentUserName GainValue Identifier IsFeedBackLink PersistedIdentifierWithTemplate StartPortName StartPortParentUserName TID UserDescription </Properties>
+            <Item Index="0" Identifier="Double_DoubleLink - 210">
+              <Values>  "0" "True" "Input1Port" "Override-Switch-DataBroker-Actuator_1" "1" "{LINK}Double_DoubleLink - 210" "False" "Double_DoubleLink - 210" "OutputPort" "Actuation_Source" "" "" </Values>
+            </Item>
+            <Item Index="1" Identifier="Double_DoubleLink - 243">
+              <Values>  "0" "True" "InputPort" "Actuator_Destination" "0.01" "{LINK}Double_DoubleLink - 243" "False" "Double_DoubleLink - 243" "OutputPort" "Override-Switch-DataBroker-Actuator_1" "" "" </Values>
+            </Item>
+          </DCS.Links.Double_DoubleLink>
+        </ListItems>
+      </IPS.Core.LinkList>
+    </List>
+  </IPS.Server.ProjectImpl>
+</IPS>

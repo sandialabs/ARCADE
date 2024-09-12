@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TreeState xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <TopItem>Project Database</TopItem>
+  <SelectedItem>Master Database\Distributed Control System\Properties\Specific Double Property</SelectedItem>
+  <ExpandedNodes>
+    <string />
+    <string>Project Database</string>
+    <string>Master Database</string>
+    <string>Master Database\Distributed Control System</string>
+    <string>Master Database\Distributed Control System\Properties</string>
+  </ExpandedNodes>
+</TreeState>

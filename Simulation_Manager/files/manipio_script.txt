@@ -1,0 +1,27 @@
+PLC 1 RCP
+IP:20.0.1.10
+Port:502
+WordOrder:Big
+ByteOrder:Big
+
+Event 1 Ramp flow rate
+PLC:1
+mem:2052
+format:32_float
+Values:8801.4,12000
+timing:60
+type:ramp
+delay:0
+persist:false
+
+Event 2 hold flow rate high
+PLC:1
+mem:2052
+values:12000
+timing:0
+type:single
+delay:60
+persist:true
+
+start
+Event 1, Event 2

@@ -1,0 +1,739 @@
+//script using directives
+//css_ref IPS.Core.dll;
+//css_ref IPS.PluginInterface.dll;
+//css_ref IPS.Units.dll;
+//css_ref IPS.Utilities.CSharp.dll;
+//css_ref Flownex.dll;
+
+using System;
+using System.Globalization;
+using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Linq;
+using IPS.Properties;
+using IPS.Scripting;
+using Flownex.Components;
+using Flownex.DataReferences.Materials;
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+struct MSG_DATA
+{
+    public int PUB;
+    public int UP;
+    public double TimeStep;
+};
+
+[StructLayout(LayoutKind.Explicit, Size = 200, CharSet = CharSet.Ansi)]
+public struct DATA
+{
+    [FieldOffset(0)]
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+    public byte[] Name;
+    
+    [FieldOffset(128)]
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
+    public byte[] Type;
+
+    [FieldOffset(184)]
+    public double Value;
+    
+    [FieldOffset(192)]
+    public double Time;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+
+struct Sem_return
+{
+    public Semaphore Sem;
+    public bool doesNotExist;
+    public bool unauthorized;
+}
+
+// The following is derived from the ******, but customized for the DataBroker.
+// This wraps toggle switches that allow the DB to over-ride a signal. The DB will
+// enguage this switch if it detects a response from an external system.
+class OverrideToggleWrapperDB
+{
+	private DCS.Components.Analog.switches.ToggleSwitch switchComponent;
+	private IPS.Properties.Integer toggleProp;
+	private IPS.Properties.Double input1Prop;
+	private IPS.Properties.Double input2Prop;
+	
+	public OverrideToggleWrapperDB(IPS.Core.Project flownexProject, string controllerSuffix)
+	{
+		switchComponent = null;		
+		var comp = flownexProject.GetComponent("Override-Switch-DataBroker-" + controllerSuffix);
+		if (comp != null)
+		{
+			switchComponent = (DCS.Components.Analog.switches.ToggleSwitch)comp;
+			toggleProp = (IPS.Properties.Integer)comp.GetPropertyFromPropID("Toggle");
+			input1Prop = (IPS.Properties.Double)comp.GetPropertyFromPropID("Input1");
+			input2Prop = (IPS.Properties.Double)comp.GetPropertyFromPropID("Input2");
+		}
+	}
+	
+	public bool IsEngaged 
+	{
+		get
+		{
+			if (switchComponent != null) 
+			{ 
+				if (toggleProp.Value == 0)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			else
+			{
+				return false;
+			}
+			
+		}
+		
+	}
+	
+	public double PassThruValue
+	{
+		get
+		{
+			if (switchComponent != null) 
+			{ 
+				return input1Prop.Value; 
+			}
+			else
+			{
+				return 0;
+			}
+			
+		}
+		
+		set
+		{
+			if (switchComponent != null) 
+			{ 
+				input1Prop.Value = value; 
+			}
+		}
+	}
+	
+	public double OverrideValue
+	{
+		get
+		{
+			if (switchComponent != null) 
+			{ 
+				return input2Prop.Value; 
+			}
+			else
+			{
+				return 0;
+			}
+			
+		}
+		
+		set
+		{
+			if (switchComponent != null) 
+			{ 
+				input2Prop.Value = value; 
+			}
+		}
+	}
+
+	public void Engage()
+	{
+		toggleProp.Value = 1;
+	}
+	
+	public void Disengage()
+	{
+		toggleProp.Value = 0;
+		OverrideValue = PassThruValue;	
+	}
+}
+
+class ControllerOverrideDB
+{
+	
+	public OverrideToggleWrapperDB Manipulated { get; set; }
+	
+			
+	public ControllerOverrideDB(IPS.Core.Project flownexProject, string controllerSuffix)
+	{
+	
+		Manipulated = new OverrideToggleWrapperDB(flownexProject, controllerSuffix);
+		
+	}
+	
+	public void set_double(double set_point)
+	{
+		
+		if (set_point > -100000000000000)
+		{
+			Manipulated.OverrideValue = set_point;
+			Manipulated.Engage();
+		}
+	}
+	
+}
+
+//script must be derived from IFNXComponentScript
+public class Script: Flownex.Scripting.IFNXComponentScript
+{	
+	
+	// Dictionary of over-ride switches
+	private System.Collections.Generic.Dictionary<string, ControllerOverrideDB> overridesDB;
+	
+	// Timing info
+	IPS.Properties.Double _Simulation_Time;
+	IPS.Properties.Double _Time_Step;
+	
+	// lists of outputs (probably unnecessary to init here)
+	List<IPS.Properties.Text> _Output_Tag;
+	List<IPS.Properties.Double> _Output_Value;
+	
+	// Shared memory data structs
+	MSG_DATA msg;
+	DATA[] UP;
+    DATA[] PUB;
+    // Shared Memory file maps
+    MemoryMappedFile PUBMapFile;
+    MemoryMappedFile UPMapFile;
+    MemoryMappedViewAccessor PUB_accessor; 
+    MemoryMappedViewAccessor UP_accessor;
+    IntPtr PUB_ptr;
+    IntPtr UP_ptr;
+    // Various shared memory info
+    int DATA_Size;
+    int PUB_size;
+    byte[] PUB_data;
+    int UP_size;
+    byte[] UP_data;
+    int sem_value_init;
+    int sem_value;
+    
+    // Semaphore pointers
+    Sem_return _init_sem;
+    Sem_return _up_sem;
+    Sem_return _pub_sem;
+    Sem_return _stop_sem;
+	// Semaphore check vars
+	bool[] check_sem;
+	bool   check_SHM;
+	
+	// Test pointers
+	IPS.Properties.Double _Test_point_1;
+	
+	private void LogToConsole(string message)
+	{
+		var consoleTarget = IPS.Task.ConsoleSolverOutputProvider.GetConsoleOutputWindow();
+		consoleTarget.AddTextLine("[DataBroker] " + message);		
+	}
+	
+	// Semaphore initalizer object
+	static Sem_return init_Sem(string sem_name)
+    {
+        Sem_return Sem_obj;  
+        Sem_obj.doesNotExist = false;
+        Sem_obj.unauthorized = false;
+        int sem_max;
+        var consoleTarget = IPS.Task.ConsoleSolverOutputProvider.GetConsoleOutputWindow();
+
+        //Attempt to open the named init semaphore
+        try { Sem_obj.Sem = Semaphore.OpenExisting(sem_name); }
+        catch (WaitHandleCannotBeOpenedException)
+        {
+            consoleTarget.AddTextLine("[DataBroker] " + sem_name + " Semaphore does not exist. Attempting to create.");
+            // Try to create the semaphore
+            
+            if (sem_name.Equals("Global\\stop_DB_sem")){ sem_max = 10; }
+            else { sem_max = 1; }
+            
+            try { Sem_obj.Sem = new Semaphore(0, sem_max, sem_name); }
+            catch (Exception ex)
+            {
+                consoleTarget.AddTextLine("[DataBroker] " + "Error attempting to create semaphore " +sem_name + ":" + ex.Message);
+                Sem_obj.doesNotExist = true;
+                Sem_obj.Sem = null;
+            }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            consoleTarget.AddTextLine("[DataBroker] " + sem_name + " Unauthorized access: " + ex.Message);
+            Sem_obj.unauthorized = true;
+            Sem_obj.Sem = null;
+        }
+        
+        return Sem_obj;
+    }
+	
+	private void SetupComponents()
+	{		
+		//init override dict
+		overridesDB = new System.Collections.Generic.Dictionary<string, ControllerOverrideDB>();
+		
+		// match Output tags and value list size
+		while (_OUT_List.Count > _OUT_Val.Count){
+			_OUT_Val.CreateAndAddNewItem();
+			}
+		while (_OUT_List.Count < _OUT_Val.Count){
+			_OUT_Val.RemoveItem(_OUT_Val.Count-1);
+			}
+		
+		//_Test_point_1.Value = _IN_List.Count;
+        msg = new MSG_DATA();
+        msg.UP = _OUT_List.Count;
+        msg.PUB = _IN_List.Count;
+        msg.TimeStep = _Time_Step.Value;
+
+        //Define the data structures
+        UP = new DATA[msg.UP];
+        PUB = new DATA[msg.PUB];
+        
+        if (msg.UP > 0)
+        {
+        	for (int i = 0; i < msg.UP; i++)
+			{
+				string over_ride = _OUT_List[i].ToString();
+				try
+				{
+					LogToConsole("Building DataBroker override class for: " + over_ride);
+					overridesDB.Add(_OUT_List[i].ToString(), new ControllerOverrideDB(Project, over_ride));
+					overridesDB[_OUT_List[i].ToString()].Manipulated.Disengage();
+				}
+				catch
+				{
+					LogToConsole("Failed building DataBroker override class for: " + over_ride);
+				}
+			}
+        }
+		
+	}
+	//do pre simulation initialisation here
+	public override void Initialise()
+	{
+		// Open console writer
+		var consoleTarget = IPS.Task.ConsoleSolverOutputProvider.GetConsoleOutputWindow();
+		
+		// Run setup script
+		SetupComponents();
+		
+		//Pack data structures for shared memory
+		
+		for (int i = 0; i < msg.PUB; i++)
+		{
+			DCS.Components.Properties.SP_Dbl_Property Input = Project.GetComponent(_IN_List[i].ToString()) as DCS.Components.Properties.SP_Dbl_Property;
+			
+			string NameString = _IN_List[i].ToString();
+			NameString = NameString.Replace(" ", "_");
+			byte[] bytes = ASCIIEncoding.ASCII.GetBytes(NameString);
+	        Array.Resize(ref bytes, 128);
+	        PUB[i].Name = bytes;
+	
+	        bytes = ASCIIEncoding.ASCII.GetBytes("Double");
+	        Array.Resize(ref bytes, 50);
+	        PUB[i].Type = bytes;
+			
+			if(Input != null){
+		        PUB[i].Value = Input.Value;
+		        PUB[i].Time = 0.0;
+			}
+			else {
+				consoleTarget.AddTextLine("[DataBroker] " + _IN_List[i].ToString() + " is a Null property, cannot retrive.");
+				PUB[i].Value = 0.0;
+		        PUB[i].Time = 0.0;
+			}
+		}
+        for (int i = 0; i < msg.UP; i++)
+        {
+            //DCS.Components.Properties.SP_Dbl_Property Output = Project.GetComponent(_OUT_List[i].ToString()) as DCS.Components.Properties.SP_Dbl_Property;
+				
+			string NameString = _OUT_List[i].ToString();
+			NameString = NameString.Replace(" ", "_");
+            byte[] bytes = ASCIIEncoding.ASCII.GetBytes(NameString);
+            Array.Resize(ref bytes, 128);
+            UP[i].Name = bytes;
+
+            bytes = ASCIIEncoding.ASCII.GetBytes("Double");
+            Array.Resize(ref bytes, 50);
+            UP[i].Type = bytes;
+
+            UP[i].Value = -100000000000000.0; //Output.Value;
+            UP[i].Time = 0.0;
+        }
+        
+        //init semaphores
+		_init_sem = init_Sem("Global\\msg_DB_sem");
+        _up_sem = init_Sem("Global\\up_DB_sem");
+        _pub_sem = init_Sem("Global\\pub_DB_sem");
+        _stop_sem = init_Sem("Global\\stop_DB_sem");
+        
+        //Check that the semaphores have initalized correctly
+        check_sem[0] = (!_init_sem.doesNotExist && !_init_sem.unauthorized);
+        check_sem[1] = (!_up_sem.doesNotExist && !_up_sem.unauthorized);
+        check_sem[2] = (!_pub_sem.doesNotExist && !_pub_sem.unauthorized);
+        check_sem[3] = (!_stop_sem.doesNotExist && !_stop_sem.unauthorized);
+		
+        if (check_sem.All(x => x))
+        {
+            consoleTarget.AddTextLine("[DataBroker] " + "Sucessful Semaphores! Opening Initalization Memory...");
+			// initalize DB memory
+            using (MemoryMappedFile memMapFile = MemoryMappedFile.CreateNew(
+                "Global\\DB_init_shm"
+                , Marshal.SizeOf(typeof(MSG_DATA))
+                , MemoryMappedFileAccess.ReadWriteExecute))
+            {
+                consoleTarget.AddTextLine("[DataBroker] " + "Sucessfuly Opened Memory...");
+                using (var accessor = memMapFile.CreateViewAccessor())
+                {
+
+                    int size = Marshal.SizeOf(typeof(MSG_DATA));
+                    byte[] data = new byte[size];
+
+                    IntPtr ptr = Marshal.AllocHGlobal(size);
+                    Marshal.StructureToPtr(msg, ptr, false);
+
+                    Marshal.Copy(ptr, data, 0, size);
+
+                    accessor.WriteArray<byte>(0, data, 0, data.Length);
+
+                    Marshal.FreeHGlobal(ptr);
+                    ptr = IntPtr.Zero;
+                }
+
+                sem_value_init = _init_sem.Sem.Release();
+                consoleTarget.AddTextLine("[DataBroker] " + "Sucessful DB Initalization.");
+                
+                _init_sem.Sem.WaitOne();
+                consoleTarget.AddTextLine("[DataBroker] " + "Sucessful semaphore wait Initalization.");
+            }
+            //Define persistant memorymappedfiles
+        	PUBMapFile = MemoryMappedFile.CreateOrOpen(
+                "Global\\DB_PUB_shm"
+                , Marshal.SizeOf(typeof(DATA)) * msg.PUB
+                , MemoryMappedFileAccess.ReadWriteExecute);
+            UPMapFile = MemoryMappedFile.CreateOrOpen(
+                "Global\\DB_UP_shm"
+                , Marshal.SizeOf(typeof(DATA)) * msg.UP
+                , MemoryMappedFileAccess.ReadWriteExecute);
+                
+            //setup accessors for memory files
+            PUB_accessor = PUBMapFile.CreateViewAccessor(); 
+            UP_accessor = UPMapFile.CreateViewAccessor();
+            
+            //Do the first write to establish the Data memory spaces
+            // Create byte arrays
+            DATA_Size = Marshal.SizeOf(typeof(DATA));
+            PUB_size = Marshal.SizeOf(typeof(DATA)) * msg.PUB;
+            PUB_data = new byte[PUB_size];
+
+            UP_size = Marshal.SizeOf(typeof(DATA)) * msg.UP;
+            UP_data = new byte[UP_size];
+
+            // Making pointers
+            PUB_ptr = Marshal.AllocHGlobal(PUB_size);
+            for (int i = 0; i < msg.PUB; i++) {
+                Marshal.StructureToPtr(PUB[i], PUB_ptr + (i*DATA_Size), true); // Must break up array to make blittable
+            }
+
+            UP_ptr = Marshal.AllocHGlobal(UP_size);
+            for (int i = 0; i < msg.UP; i++)
+            {
+                Marshal.StructureToPtr(UP[i], UP_ptr + i * DATA_Size, true); 
+            }
+
+            // Copy data to pointers
+            Marshal.Copy(PUB_ptr, PUB_data, 0, PUB_size);
+            Marshal.Copy(UP_ptr, UP_data, 0, UP_size);
+
+            // write to shared memory
+            PUB_accessor.WriteArray<byte>(0, PUB_data, 0, PUB_data.Length);
+            UP_accessor.WriteArray<byte>(0, UP_data, 0, UP_data.Length);
+
+            // Free Memory
+            Marshal.FreeHGlobal(PUB_ptr);
+            PUB_ptr = IntPtr.Zero;
+
+            Marshal.FreeHGlobal(UP_ptr);
+            UP_ptr = IntPtr.Zero;
+
+            // release initialization semaphore, signal DB to start
+            sem_value_init = _init_sem.Sem.Release();
+            
+            // Start update loop
+            //bool stop_value = _stop_sem.Sem.WaitOne(0);
+            
+			//bool sem_up_value = _up_sem.Sem.WaitOne((int)(msg.TimeStep * 5000));
+
+        }
+        else{
+        
+        	consoleTarget.AddTextLine("[DataBroker] " + "Semaphore check failed. DataBroker not initalized");
+        }
+	}
+	
+	//return true in this function if you have initialisation code
+	//and want to transfer the inputs to the flow solver components
+	public override bool ShouldTransferDataAfterInitialise()
+	{
+		return false;
+	}
+	
+	//do post simulation cleanup here
+	public override void Cleanup()
+	{
+		sem_value = _stop_sem.Sem.Release();
+		sem_value = _stop_sem.Sem.Release();
+		sem_value = _stop_sem.Sem.Release();
+		sem_value = _stop_sem.Sem.Release();
+		sem_value = _stop_sem.Sem.Release();
+		
+		//Dispose of mappedmemmoryfiles
+	    PUB_accessor.Dispose(); 
+	    UP_accessor.Dispose();
+	    PUBMapFile.Dispose();
+	    UPMapFile.Dispose();
+	    
+	}
+
+	//any calculations during each steady state pressure iteration
+	public override void SteadyStatePressureIteration(int iIterationNumber)
+	{
+		//calculates the base 10 logarithm of the input
+		//_Output_Value_1.Value = Math.Log10(_Input_Value_1.Value);
+	}
+
+	//any calculations during each transient pressure iteration
+	public override void TransientPressureIteration(int iIterationNumber, double Time)
+	{
+    		SteadyStatePressureIteration(iIterationNumber);
+	}	
+
+	//any calculations during each steady state temperature iteration
+	public override void SteadyStateTemperatureIteration(int iIterationNumber)
+	{
+	}
+
+	//any calculations during each transient temperature iteration
+	public override void TransientTemperatureIteration(int iIterationNumber, double Time)
+	{
+		SteadyStateTemperatureIteration(iIterationNumber);
+	}	 
+
+	//any calculations during each steady state concentration iteration
+	public override void SteadyStateConcentrationIteration(int iIterationNumber)
+	{
+	}
+
+	//any calculations during each transient concentration iteration
+	public override void TransientConcentrationIteration(int iIterationNumber, double Time)
+	{
+		SteadyStateConcentrationIteration(iIterationNumber);
+	}	 
+	//any calculations at then end of each steady state  iteration
+	public override void SteadyStateIterationCompleted(int iIterationNumber)
+	{
+	}
+
+	 //any calculations at then end of each transient  iteration
+	public override void TransientIterationCompleted(int iIterationNumber, double Time)
+	{
+		SteadyStateConcentrationIteration(iIterationNumber);
+	}	  
+	
+	//return true if this script has own convergence parameter checking
+	//usually return false
+	public override bool NeedsAnotherPressureIteration()
+	{
+		return false;
+	}
+
+	//return true if this script has own convergence parameter checking
+	//usually return false
+	public override bool NeedsAnotherTemperatureIteration()
+	{
+		return false;
+	}	 
+
+	//return true if this script has own convergence parameter checking
+	//usually return false
+	public override bool NeedsAnotherConcentrationIteration()
+	{
+		return false;
+	}	 
+
+	//if you want to do any calculations or updates when solving is done
+	public override void SteadyStateSolveCompleted()
+	{
+	}	 
+
+	//if you want to do any calculations or updates when solving is done
+	public override void TransientSolveCompleted()
+	{
+		// Open console writer
+		var consoleTarget = IPS.Task.ConsoleSolverOutputProvider.GetConsoleOutputWindow();
+		
+		//check stop semaphore
+		bool stop_value = _stop_sem.Sem.WaitOne(0);
+		
+		if(!stop_value){
+			
+			//Update time
+			_Simulation_Time.Value = Project.SimulationTime;
+			//update pubish points from inputs
+	        for (int i = 0; i < msg.PUB; i++)
+			{
+				DCS.Components.Properties.SP_Dbl_Property Input = Project.GetComponent(_IN_List[i].ToString()) as DCS.Components.Properties.SP_Dbl_Property;
+				
+				if(Input != null){
+				
+					PUB[i].Value = Input.Value;
+			        PUB[i].Time = _Simulation_Time.Value;
+				}
+			}
+	        
+	        bool sem_up_value = _up_sem.Sem.WaitOne((int)(msg.TimeStep * 5000));
+            if (sem_up_value)
+            {
+                PUB_ptr = Marshal.AllocHGlobal(PUB_size);
+                UP_ptr = Marshal.AllocHGlobal(UP_size);
+
+                // Encode structure into a pointer, then into a byte array
+                for (int i = 0; i < msg.PUB; i++)
+                {
+                    Marshal.StructureToPtr(PUB[i], PUB_ptr + (i * DATA_Size), true); // Must break up array to make blittable
+                }
+                Marshal.Copy(PUB_ptr, PUB_data, 0, PUB_size);
+                // write to publish point
+                PUB_accessor.WriteArray<byte>(0, PUB_data, 0, PUB_data.Length);
+
+                //read from Update point
+                UP_accessor.ReadArray<byte>(0, UP_data, 0, UP_data.Length);
+                Marshal.Copy(UP_data, 0, UP_ptr, UP_size);
+                
+                
+                for (int i = 0; i < msg.UP; i++)
+                {
+                    UP[i] = (DATA) Marshal.PtrToStructure(UP_ptr + (i * DATA_Size), typeof(DATA)); // Windows C# compiler doesnt totally like this method, but it can eat it. We can't code a padded room for windows while being efficent.
+                }
+                
+                //free memory space
+                Marshal.FreeHGlobal(PUB_ptr);
+                PUB_ptr = IntPtr.Zero;
+
+                Marshal.FreeHGlobal(UP_ptr);
+                UP_ptr = IntPtr.Zero;
+
+                sem_value = _pub_sem.Sem.Release();
+            }
+	        
+	        
+	        //export update values to outputs
+	        for (int i = 0; i < msg.UP; i++)
+	        {
+	            overridesDB[_OUT_List[i].ToString()].set_double(UP[i].Value);
+	            _OUT_Val[i].Value = UP[i].Value;
+	        }
+        }
+        else{ //send error for stop semaphore being set
+        	consoleTarget.AddTextLine("[DataBroker] " + "Data Broker is stopped, please stop the simulation!");
+        }
+	}
+
+	//constructer initialises parameters
+	public Script()
+	{
+		_Test_point_1 = new IPS.Properties.Double();
+		//init Time
+		_Simulation_Time = new IPS.Properties.Double();
+		_Time_Step = new IPS.Properties.Double();
+		_Simulation_Time.Value = 0.0;
+		_Time_Step.Value = Project.TimeStep;
+		
+		//init values and tags
+		
+		_IN_List = new IPS.Properties.List<IPS.Properties.Text>();
+		_OUT_List = new IPS.Properties.List<IPS.Properties.Text>();
+		_OUT_Val = new IPS.Properties.List<IPS.Properties.Double>();
+        
+        check_sem = new bool[4];
+	}
+
+	//property declarations to make
+	//parameters visible to outside world
+	[GridCategory(new string[] { "Time Information" })]
+	[PropertyUsage(UseProperty.DYNAMIC)]
+	public IPS.Properties.Double Simulation_Time
+	{
+		get
+		{
+			return _Simulation_Time;
+		}
+	}
+	[GridCategory(new string[] { "Time Information" })]
+	[PropertyUsage(UseProperty.DYNAMIC)]
+	public IPS.Properties.Double Time_Step
+	{
+		get
+		{
+			return _Time_Step;
+		}
+	}
+	
+	//Sensor inputs
+	IPS.Properties.List<IPS.Properties.Text> _IN_List;
+	[GridCategory(new string[]{"Inputs"})]
+	[DisplayName("List Of Sensor Input IDs")]
+	[PropertyUsage(UseProperty.DYNAMIC)]
+	public IPS.Properties.List<IPS.Properties.Text> IN_List
+	{
+		get
+		{
+			return _IN_List;
+		}
+		set
+		{
+			_IN_List.ValueAsObject = IN_List;
+		}
+	}
+	
+	//Actuator outputs
+	IPS.Properties.List<IPS.Properties.Text> _OUT_List;
+	[GridCategory(new string[]{"Outputs"})]
+	[DisplayName("List Of Actuator Output IDs")]
+	[PropertyUsage(UseProperty.DYNAMIC)]
+	public IPS.Properties.List<IPS.Properties.Text> OUT_List
+	{
+		get
+		{
+			return _OUT_List;
+		}
+		set
+		{
+			_OUT_List.ValueAsObject = OUT_List;
+		}
+	}
+	IPS.Properties.List<IPS.Properties.Double> _OUT_Val;
+	[GridCategory(new string[]{"Outputs"})]
+	[DisplayName("List Of Actuator Output Values")]
+	[PropertyUsage(UseProperty.DYNAMIC)]
+	public IPS.Properties.List<IPS.Properties.Double> OUT_Val
+	{
+		get
+		{
+			return _OUT_Val;
+		}
+		set
+		{
+			_OUT_Val.ValueAsObject = OUT_Val;
+		}
+	}
+
+}

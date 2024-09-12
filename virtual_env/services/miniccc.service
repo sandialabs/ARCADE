@@ -1,0 +1,10 @@
+[Unit]
+Description=miniccc Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/bin/miniccc -serial /dev/virtio-ports/cc
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,72 @@
+<?xml version="1.0" standalone="yes"?>
+<IPS>
+  <Library Name="IPS" Version="8.16.0.5518" />
+  <Library Name="CapeOpenFluidGenerator" Version="1.0.8873.0" />
+  <Library Name="DCS" Version="8.16.0.0" />
+  <Library Name="ElectricalNetworkSolver" Version="8.16.0.0" />
+  <Library Name="Flownex" Version="8.16.0.0" />
+  <Library Name="ForceCalculations" Version="1.0.8873.0" />
+  <Library Name="IPS.Actions" Version="8.16.0.0" />
+  <Library Name="IPS.Alarms" Version="8.16.0.0" />
+  <Library Name="IPS.Ansys" Version="8.16.0.0" />
+  <Library Name="IPS.Backtracking" Version="8.16.0.0" />
+  <Library Name="IPS.CAESAR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.DataTransfer" Version="8.16.0.0" />
+  <Library Name="IPS.Designer" Version="8.16.0.0" />
+  <Library Name="IPS.EES" Version="8.16.0.0" />
+  <Library Name="IPS.Excel" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelInputSheets" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelReporting" Version="8.16.0.0" />
+  <Library Name="IPS.Exposers" Version="8.16.0.0" />
+  <Library Name="IPS.FMI" Version="8.16.0.0" />
+  <Library Name="IPS.GAOptimiser" Version="8.16.0.0" />
+  <Library Name="IPS.GlobalParameters" Version="8.16.0.0" />
+  <Library Name="IPS.Logger" Version="8.16.0.0" />
+  <Library Name="IPS.Mathcad" Version="8.16.0.0" />
+  <Library Name="IPS.OPCDriver" Version="8.16.0.0" />
+  <Library Name="IPS.OPCUA" Version="1.0.0.0" />
+  <Library Name="IPS.ParameterDisplay" Version="8.16.0.0" />
+  <Library Name="IPS.PropertyMonitor" Version="8.16.0.0" />
+  <Library Name="IPS.Relap" Version="8.16.0.0" />
+  <Library Name="IPS.ROHR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.ROMBuilder" Version="8.16.0.0" />
+  <Library Name="IPS.ScaleDrawing" Version="8.16.0.0" />
+  <Library Name="IPS.Scheduler" Version="8.16.0.0" />
+  <Library Name="IPS.Scripting" Version="8.16.0.0" />
+  <Library Name="IPS.SensitivityAnalysis" Version="8.16.0.0" />
+  <Library Name="IPS.SixSigma" Version="8.16.0.0" />
+  <Library Name="IPS.TextFileLink" Version="8.16.0.0" />
+  <Library Name="IPS.Tools" Version="8.16.0.0" />
+  <Library Name="IPS.VideoRecorder" Version="1.0.0.0" />
+  <Library Name="IPS.Visualisation" Version="8.16.0.0" />
+  <Library Name="IPS.WordReporting" Version="8.16.0.0" />
+  <Library Name="NistFluidGenerator" Version="1.0.8873.0" />
+  <System.Collections.Generic.List_HEX60_1>
+    <ListItems>
+      <IPS.DefaultEditor.DefaultEditorSettings>
+        <Properties>ConstantColor CustomFormat DenamicConstantColor DynamicColor EnableSelection Format OptionDropDownButtons PersistToProjectColor Precision ResultColor StaticColor UpdateInterval </Properties>
+        <Item Index="0">
+          <Values>  "Black" "G6" "Black" "Black" "True" "GENERAL" "True" "Black" "6" "Black" "Black" "333 Time ms" </Values>
+        </Item>
+      </IPS.DefaultEditor.DefaultEditorSettings>
+      <IPS.Errors.ErrorSettings>
+        <Properties>WriteToLog </Properties>
+        <Item Index="0">
+          <Values>  "False" </Values>
+        </Item>
+      </IPS.Errors.ErrorSettings>
+      <IPS.Server.ProjectSettings>
+        <Properties>AutoReconnect DeleteBacktracksOnSnapLoad DrawPageTooltipsEnabled FileExtensionsIgnore FoldersIgnore GeneratedMonteCarloSeed GridEnabled GUIUpdate GUIUpdateInterval ImageTransparencyOption LinkToolType ListenPort LockPages MaxPagesPerWindow MaxSnaps Mode NotShownDialogs PauseSnapLoad PauseSnapSave PortHighlightTranscarency ProjectType PropertyLoadingMode ReloadRemoteOnChanges RevisionNumber RulerEnabled SaveGraphHistories SchedulerKeepUpMessage ShowCommandReplayDialog ShowProjectStatus ShowRemotingAmountProperties ShowSolvingStateOnTree ShowTasksOutputWindow ShowViewlessFaultDialog SnapProperty1 SnapProperty1Name SnapProperty2 SnapProperty2Name SnapProperty3 SnapProperty3Name SnapProperty4 SnapProperty4Name SnapProperty5 SnapProperty5Name SnapRun SnapToGridEnabled SolveRemotelySteps SpecifyMonteCarloSeed TimeOutEnabled TimeOutPeriod UserMonteCarloSeed </Properties>
+        <Item Index="0">
+          <Values>  "False" "True" "True" "" "" "0" "True" "True" "0.1 Time s" "UseLeftCornerInNonTransparentImages" "Poly" "0" "False" "-1" "-1" "Design" "" "True" "False" "80" "" "AllData" "True" "4" "False" "True" "True" "True" "True" "False" "True" "True" "True" "None|:|None" "" "None|:|None" "" "None|:|None" "" "None|:|None" "" "None|:|None" "" "False" "True" "1" "False" "False" "120 Time s" "0" </Values>
+        </Item>
+      </IPS.Server.ProjectSettings>
+      <IPS.Settings.PageSettings>
+        <Properties>Height Layers StyleSelector Width </Properties>
+        <Item Index="0">
+          <Values>  "5920" "" "*F*Solid;Horizontal1;;White;White;100*/F**S*DarkGray;Solid;1*/S**T*Black;Microsoft Sans Serif, 10pt;MiddleCenter;*/T*" "8400" </Values>
+        </Item>
+      </IPS.Settings.PageSettings>
+    </ListItems>
+  </System.Collections.Generic.List_HEX60_1>
+</IPS>

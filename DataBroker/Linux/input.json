@@ -1,0 +1,28 @@
+{
+    "Simulator": [
+        {
+            "executableName": "ans_simdiag_15jul21",
+            "hold_for_dante": "false"
+        }
+    ],
+    "Endpoints": [
+        {
+            "Node": "SGP_RCP_SGL_Controller",
+            "IP_Host": "127.0.0.1",
+            "Server":[
+                {
+                    "Server_IP": "127.0.0.1",
+                    "Proto": "Modbus",
+                    "SensorTags": "SG1_Level,SG2_Level,RX_ReactorPower",
+                    "SensorMem": "2052,2054,2056",
+                    "ActuatorTags": "FW_Pump1SpeedCmd,FW_Pump2SpeedCmd,FW_Pump3SpeedCmd,FW_Pump1OnOffCmd,FW_Pump2OnOffCmd,FW_Pump3OnOffCmd",
+                    "ActuatorMem": "2058,2060,2062,2064,2066,2068",
+                    "ScanTime": "0.1",
+                    "TimeMem": "2048",
+                    "MemFormat": "32_float"
+                }
+            ]
+            
+        }
+    ]
+}

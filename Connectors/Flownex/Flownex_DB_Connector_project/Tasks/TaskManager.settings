@@ -1,0 +1,165 @@
+<?xml version="1.0" standalone="yes"?>
+<IPS>
+  <Library Name="IPS" Version="8.16.0.5518" />
+  <Library Name="CapeOpenFluidGenerator" Version="1.0.8873.0" />
+  <Library Name="DCS" Version="8.16.0.0" />
+  <Library Name="ElectricalNetworkSolver" Version="8.16.0.0" />
+  <Library Name="Flownex" Version="8.16.0.0" />
+  <Library Name="ForceCalculations" Version="1.0.8873.0" />
+  <Library Name="IPS.Actions" Version="8.16.0.0" />
+  <Library Name="IPS.Alarms" Version="8.16.0.0" />
+  <Library Name="IPS.Ansys" Version="8.16.0.0" />
+  <Library Name="IPS.Backtracking" Version="8.16.0.0" />
+  <Library Name="IPS.CAESAR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.DataTransfer" Version="8.16.0.0" />
+  <Library Name="IPS.Designer" Version="8.16.0.0" />
+  <Library Name="IPS.EES" Version="8.16.0.0" />
+  <Library Name="IPS.Excel" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelInputSheets" Version="8.16.0.0" />
+  <Library Name="IPS.ExcelReporting" Version="8.16.0.0" />
+  <Library Name="IPS.Exposers" Version="8.16.0.0" />
+  <Library Name="IPS.FMI" Version="8.16.0.0" />
+  <Library Name="IPS.GAOptimiser" Version="8.16.0.0" />
+  <Library Name="IPS.GlobalParameters" Version="8.16.0.0" />
+  <Library Name="IPS.Logger" Version="8.16.0.0" />
+  <Library Name="IPS.Mathcad" Version="8.16.0.0" />
+  <Library Name="IPS.OPCDriver" Version="8.16.0.0" />
+  <Library Name="IPS.OPCUA" Version="1.0.0.0" />
+  <Library Name="IPS.ParameterDisplay" Version="8.16.0.0" />
+  <Library Name="IPS.PropertyMonitor" Version="8.16.0.0" />
+  <Library Name="IPS.Relap" Version="8.16.0.0" />
+  <Library Name="IPS.ROHR2Importer" Version="8.16.0.0" />
+  <Library Name="IPS.ROMBuilder" Version="8.16.0.0" />
+  <Library Name="IPS.ScaleDrawing" Version="8.16.0.0" />
+  <Library Name="IPS.Scheduler" Version="8.16.0.0" />
+  <Library Name="IPS.Scripting" Version="8.16.0.0" />
+  <Library Name="IPS.SensitivityAnalysis" Version="8.16.0.0" />
+  <Library Name="IPS.SixSigma" Version="8.16.0.0" />
+  <Library Name="IPS.TextFileLink" Version="8.16.0.0" />
+  <Library Name="IPS.Tools" Version="8.16.0.0" />
+  <Library Name="IPS.VideoRecorder" Version="1.0.0.0" />
+  <Library Name="IPS.Visualisation" Version="8.16.0.0" />
+  <Library Name="IPS.WordReporting" Version="8.16.0.0" />
+  <Library Name="NistFluidGenerator" Version="1.0.8873.0" />
+  <IPS.TaskThreading.TaskManager>
+    <Properties>ExecuteInParallel IsLoaded ShowOnlyStepTasks ThreadCount </Properties>
+    <Values>  "AutoAssignCPUsForFlowSolver" "True" "True" "1" </Values>
+    <List Name="TaskControllers">
+      <IPS.TaskThreading.ITaskControllerList>
+        <ListItems>
+          <IPS.TaskThreading.TaskController>
+            <Properties>Dependencies Enabled Identifier StepFactor </Properties>
+            <Item Index="0">
+              <Values>  "" "True" "{TASK}6SigmaDCX" "1" </Values>
+            </Item>
+            <Item Index="1">
+              <Values>  "" "True" "{TASK}Actions" "1" </Values>
+            </Item>
+            <Item Index="2">
+              <Values>  "" "True" "{TASK}Alarms" "1" </Values>
+            </Item>
+            <Item Index="3">
+              <Values>  "" "True" "{TASK}Animation" "1" </Values>
+            </Item>
+            <Item Index="4">
+              <Values>  "" "True" "{TASK}Ansys" "1" </Values>
+            </Item>
+            <Item Index="5">
+              <Values>  "" "True" "{TASK}Backtracker" "1" </Values>
+            </Item>
+            <Item Index="6">
+              <Values>  "" "True" "{TASK}Data Transfer" "1" </Values>
+            </Item>
+            <Item Index="7">
+              <Values>  "" "True" "{TASK}Designer" "1" </Values>
+            </Item>
+            <Item Index="8">
+              <Values>  "" "True" "{TASK}Distributed Control Task" "1" </Values>
+            </Item>
+            <Item Index="9">
+              <Values>  "" "True" "{TASK}EES" "1" </Values>
+            </Item>
+            <Item Index="10">
+              <Values>  "" "True" "{TASK}Electrical Network Solver" "1" </Values>
+            </Item>
+            <Item Index="11">
+              <Values>  "" "True" "{TASK}Excel" "1" </Values>
+            </Item>
+            <Item Index="12">
+              <Values>  "" "True" "{TASK}Excel InputSheets" "1" </Values>
+            </Item>
+            <Item Index="13">
+              <Values>  "" "True" "{TASK}Excel Reporting" "1" </Values>
+            </Item>
+            <Item Index="14">
+              <Values>  "" "True" "{TASK}Flow Solver" "1" </Values>
+            </Item>
+            <Item Index="15">
+              <Values>  "" "True" "{TASK}FMI" "1" </Values>
+            </Item>
+            <Item Index="16">
+              <Values>  "" "True" "{TASK}Force Calculations" "1" </Values>
+            </Item>
+            <Item Index="17">
+              <Values>  "" "True" "{TASK}Global Parameters" "1" </Values>
+            </Item>
+            <Item Index="18">
+              <Values>  "" "True" "{TASK}Graphing" "1" </Values>
+            </Item>
+            <Item Index="19">
+              <Values>  "" "True" "{TASK}Logger" "1" </Values>
+            </Item>
+            <Item Index="20">
+              <Values>  "" "True" "{TASK}Mathcad" "1" </Values>
+            </Item>
+            <Item Index="21">
+              <Values>  "" "True" "{TASK}MS Word Reporting" "1" </Values>
+            </Item>
+            <Item Index="22">
+              <Values>  "" "True" "{TASK}OPC UA" "1" </Values>
+            </Item>
+            <Item Index="23">
+              <Values>  "" "True" "{TASK}OPCTask" "1" </Values>
+            </Item>
+            <Item Index="24">
+              <Values>  "" "True" "{TASK}Optimiser" "1" </Values>
+            </Item>
+            <Item Index="25">
+              <Values>  "" "True" "{TASK}Parameter Display" "1" </Values>
+            </Item>
+            <Item Index="26">
+              <Values>  "" "True" "{TASK}PropertyMonitors" "1" </Values>
+            </Item>
+            <Item Index="27">
+              <Values>  "" "True" "{TASK}Relap" "1" </Values>
+            </Item>
+            <Item Index="28">
+              <Values>  "" "True" "{TASK}Result Layers" "1" </Values>
+            </Item>
+            <Item Index="29">
+              <Values>  "" "True" "{TASK}ROM Builder" "1" </Values>
+            </Item>
+            <Item Index="30">
+              <Values>  "" "True" "{TASK}ScaleDrawing" "1" </Values>
+            </Item>
+            <Item Index="31">
+              <Values>  "" "True" "{TASK}Scheduler" "1" </Values>
+            </Item>
+            <Item Index="32">
+              <Values>  "" "True" "{TASK}Scripting" "1" </Values>
+            </Item>
+            <Item Index="33">
+              <Values>  "" "True" "{TASK}Sensitivity Analysis" "1" </Values>
+            </Item>
+            <Item Index="34">
+              <Values>  "" "True" "{TASK}Text File Link" "1" </Values>
+            </Item>
+            <Item Index="35">
+              <Values>  "" "True" "{TASK}Video Recorder" "1" </Values>
+            </Item>
+          </IPS.TaskThreading.TaskController>
+        </ListItems>
+      </IPS.TaskThreading.ITaskControllerList>
+    </List>
+  </IPS.TaskThreading.TaskManager>
+</IPS>

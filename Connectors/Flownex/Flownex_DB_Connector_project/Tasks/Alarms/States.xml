@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AlarmsStates>
+  <Statec52b681f53ce4e6da42d260faed2db61>
+    <Columns>
+      <Column name="AcknowledgedColumn">
+        <Width>45</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>1</AutoFitWeight>
+      </Column>
+      <Column name="DateTimeColumn">
+        <Width>65</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="NameColumn">
+        <Width>65</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="DescriptionColumn">
+        <Width>65</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="MessageColumn">
+        <Width>65</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="TriggerColumn">
+        <Width>65</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="LevelColumn">
+        <Width>80</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>1</AutoFitWeight>
+      </Column>
+    </Columns>
+    <SortColumn />
+    <RowHeight>18</RowHeight>
+    <AutoFitColumns>True</AutoFitColumns>
+  </Statec52b681f53ce4e6da42d260faed2db61>
+  <StateDefaultAlarmsWindow>
+    <Columns>
+      <Column name="AcknowledgedColumn">
+        <Width>45</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>1</AutoFitWeight>
+      </Column>
+      <Column name="DateTimeColumn">
+        <Width>118</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="NameColumn">
+        <Width>118</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="DescriptionColumn">
+        <Width>118</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="MessageColumn">
+        <Width>118</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="TriggerColumn">
+        <Width>118</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>3</AutoFitWeight>
+      </Column>
+      <Column name="LevelColumn">
+        <Width>80</Width>
+        <SortDirection>Ascending</SortDirection>
+        <Active>True</Active>
+        <Pinned>False</Pinned>
+        <AutoFitWeight>1</AutoFitWeight>
+      </Column>
+    </Columns>
+    <SortColumn />
+    <RowHeight>18</RowHeight>
+    <AutoFitColumns>True</AutoFitColumns>
+  </StateDefaultAlarmsWindow>
+</AlarmsStates>

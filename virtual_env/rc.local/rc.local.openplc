@@ -1,0 +1,9 @@
+#!/bin/sh -e
+#
+#  rc.local
+
+#ifconfig ens1 up
+#ifconfig ens1 30.0.1.25 netmask 255.255.255.0
+cd /workdir
+#bash /workdir/start_openplc.sh &
+exit 0

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfPermissionSet xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <PermissionSet>
+    <UType>Engineer</UType>
+    <Permissions>31103</Permissions>
+    <LibraryWindowPermissions />
+  </PermissionSet>
+  <PermissionSet>
+    <UType>Instructor</UType>
+    <Permissions>28799</Permissions>
+    <LibraryWindowPermissions />
+  </PermissionSet>
+  <PermissionSet>
+    <UType>Operator</UType>
+    <Permissions>8192</Permissions>
+    <LibraryWindowPermissions />
+  </PermissionSet>
+</ArrayOfPermissionSet>
