@@ -1,6 +1,6 @@
 # ARCADE
 
-![ARCADE Functional Diagram](images/ARCADE_Diagram.PNG)
+![ARCADE Functional Diagram](images/ARCADE_Diagram.png)
 
 ARCADE (Advanced Reactor Cyber Analysis and Development Environment) is a collection of tools designed to enable researchers to perform cybersecurity experiments on Defensive Cyber Security Architectures (DCSA) for Distributed Control Systems (DCSs). These tools are integrated into a cohesive environment that extends the usefulness of these tools to perform cyber risk analysis and reduce analysis cost. Using ARCADE, it will be possible to investigate the entire cyber-attack surface of a DCS from the physics of control, down to the firmware of individual components with automated efficiency. ARCADE can be described is five major functional components: the Data Broker system, the virtualization environment, the cyber attack simulator, the cyber-physical analysis system, and the physics simulator.
 
