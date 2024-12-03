@@ -1,20 +1,3 @@
-# Copyright 2024 National Technology & Engineering Solutions of Sandia, LLC (NTESS). 
-# Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains 
-# certain rights in this software.
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import threading
 import logging
 import queue
@@ -435,13 +418,21 @@ class Connector:
         self.Data = Data
         self.Lock = Lock
         self.Time_Mem = -1
+        self.TimeNS = "3"
+        self.TimeScaling = 1
         self.Scan_Time = 0.1
         self.actuator = False
         self.sensor = False
         self.SensorTags = []
         self.SensorMem = []
+        self.SensorNS = []
+        self.SensorOffset = []
+        self.SensorScaling = []
         self.ActuatorTags = []
         self.ActuatorMem = []
+        self.ActuatorNS = []
+        self.ActuatorOffset = []
+        self.ActuatorScaling = []
         self.thread = None
         self.Event = Event
         self.setup()
@@ -459,14 +450,15 @@ class Connector:
             try:
                 self.PLC = proto_dict[self.config.config_dict['Proto'].lower()](self.config.export_config())
             except:
-                print("Failed: %s PLC failed setup." % self.config.config_dict['Proto'])
+                logging.error("Failed: %s PLC failed setup." % self.config.config_dict['Proto'])
         else:
-            print('Error: No PLC protocol specified, using Modbus as default.')
+            logging.error('Error: No PLC protocol specified, using Modbus as default.')
             self.PLC = MB_PLC(self.config.export_config())
         
         #setup loop to check all configs
-        config_opts = ["Time_Mem","Scan_Time"]
-        config_list_opts = ["SensorTags","SensorMem","ActuatorTags","ActuatorMem"]
+        config_opts = ["Time_Mem","Scan_Time","TimeNS","TimeScaling"]
+        config_list_opts = ["SensorTags","SensorMem","SensorNS","SensorOffset","SensorScaling","ActuatorTags","ActuatorMem","ActuatorNS","ActuatorOffset","ActuatorScaling"]
+        config_list_defaults = {"SensorNS" : "3","SensorOffset" : 0,"SensorScaling" : 1,"ActuatorNS" : "3","ActuatorOffset" : 0,"ActuatorScaling" : 1}
         for c in config_opts:
             if self.config.validate(c):
                 exec( 'self.' + c + '=self.config.collect(c)' )
@@ -478,15 +470,33 @@ class Connector:
         #check for actuator and sensor options
         if self.ActuatorTags:
             if len(self.ActuatorTags) == len(self.ActuatorMem):
-                self.actuator = True
+                if len(self.ActuatorTags) > 0:
+                    self.actuator = True
             else:
-                print('Error: # of Actuator tags and # of Actuator memory addresses is not the same.')
+                logging.error('Error: # of Actuator tags and # of Actuator memory addresses is not the same.')
         if self.SensorTags:
             if len(self.SensorTags) == len(self.SensorMem):
-                self.sensor = True
+                if len(self.SensorTags) > 0:
+                    self.sensor = True
             else:
-                print('Error: # of Sensor tags and # of Sensor memory addresses is not the same.')
-    
+                logging.error('Error: # of Sensor tags and # of Sensor memory addresses is not the same.')
+
+        #check NameSpace and Scaling settings
+        for c in config_list_opts:
+            if c[:6] == 'Sensor' and self.sensor and c != "SensorTags" and c != "SensorMem":
+                if eval("len(self."+c+") != len(self.SensorMem) and len(self."+c+") > 0"):
+                    exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.SensorMem) - len(self."+c+")))")
+                elif eval("len(self."+c+") <= 0"):
+                    exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.SensorMem))]")
+            elif c[:8] == 'Actuator' and self.actuator and c != "ActuatorTags" and c != "ActuatorMem":
+                if eval("len(self."+c+") != len(self.ActuatorMem) and len(self."+c+") > 0"):
+                    exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.ActuatorMem) - len(self."+c+")))")
+                elif eval("len(self."+c+") <= 0"):
+                    exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.ActuatorMem))]")
+            #make sure that all the floats are actually converted to floats
+            if c[-6:] == 'Offset' or c[-6:] == 'caling':
+                exec("self."+c+" = [float(x) for x in self."+c+"]")
+
     #This is a helper function for browsing the OPC-UA Node Tree, returns a node of the given browse_name tag
     def checkNodeExists(self, node, name):
         for var in node.get_variables():
@@ -503,209 +513,220 @@ class Connector:
             Actuator_data = [0.0] * len(self.ActuatorTags)
         
         #Check whether we're using an OPC or Modbus Connection - can expand later for additional protocol support
-        match self.PLC:
-            case (OPCUA_Server()):
-                self.server = Server()
-                self.server.set_endpoint("opc.tcp://127.0.0.1:4840/freeopcua/server/")
+        if (isinstance(self.PLC, OPCUA_Server)):
+            self.server = Server()
+            self.server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
 
-                # setup our own namespace, not really necessary but should, as it could be changed later
-                self.uri = "http://examples.freeopcua.github.io"
-                self.idx = self.server.register_namespace(self.uri)
+            # setup our own namespace, not really necessary but should, as it could be changed later
+            self.uri = "http://examples.freeopcua.github.io"
+            self.idx = self.server.register_namespace(self.uri)
 
-                # Build Object Root Nodes for Sensor and Actuator tags
-                dataObj = self.server.nodes.objects.add_object(self.idx, "SenseRoot")
-                dataObj2 = self.server.nodes.objects.add_object(self.idx, "ActRoot")
-                self.OPC_Sensor_Nodes = []
-                self.OPC_Actuator_Nodes = []
+            # Build Object Root Nodes for Sensor and Actuator tags
+            dataObj = self.server.nodes.objects.add_object(self.idx, "SenseRoot")
+            dataObj2 = self.server.nodes.objects.add_object(self.idx, "ActRoot")
+            self.OPC_Sensor_Nodes = []
+            self.OPC_Actuator_Nodes = []
+        
+            # populating our address space for sensors and actuators
+            for i in range(len(Sensor_data)):
+                self.OPC_Sensor_Nodes.append(dataObj.add_variable(self.idx, str(self.SensorTags[i]), Sensor_data[i]))
+                self.OPC_Sensor_Nodes[len(self.OPC_Sensor_Nodes)-1].set_writable()
+        
+            for i in range(len(Actuator_data)):
+                self.OPC_Actuator_Nodes.append(dataObj2.add_variable(self.idx, str(self.ActuatorTags[i]), Actuator_data[i]))
+                self.OPC_Actuator_Nodes[len(self.OPC_Actuator_Nodes)-1].set_writable()
+
+            # starting!
+            self.server.start()
+            print("OPC-UA server started successfully, ensure your PLC has a running client!")
             
-                # populating our address space for sensors and actuators
-                for i in range(len(Sensor_data)):
-                    self.OPC_Sensor_Nodes.append(dataObj.add_variable(self.idx, str(self.SensorTags[i]), Sensor_data[i]))
-                    self.OPC_Sensor_Nodes[len(self.OPC_Sensor_Nodes)-1].set_writable()
-            
-                for i in range(len(Actuator_data)):
-                    self.OPC_Actuator_Nodes.append(dataObj2.add_variable(self.idx, str(self.ActuatorTags[i]), Actuator_data[i]))
-                    self.OPC_Actuator_Nodes[len(self.OPC_Actuator_Nodes)-1].set_writable()
-
-                # starting!
-                self.server.start()
-                print("OPC-UA server started successfully, ensure your PLC has a running client!")
+            #Setting Up ZMQ Connection
+            if self.actuator:
+                context = zmq.Context()
+                DB = context.socket(zmq.PUSH)
+                serverAddress = self.serAdd.get(block=True)
+                DB.connect("tcp://"+serverAddress+":5555")
+                logging.info("Successfully connected to server: " + serverAddress)
                 
-                #Setting Up ZMQ Connection
-                if self.actuator:
-                    context = zmq.Context()
-                    DB = context.socket(zmq.PUSH)
-                    serverAddress = self.serAdd.get(block=True)
-                    DB.connect("tcp://"+serverAddress+":5555")
-                    logging.info("Successfully connected to server: " + serverAddress)
-                    
-                #Setup timing mechanism
-                time_end = time.time()
-                try:
-                    while True:
-                        time.sleep(1)
-                        if self.sensor:
-                            with self.Lock:
-                                #Update tag values
-                                for i in range(len(self.SensorTags)):
-                                    curNode = self.checkNodeExists(dataObj, self.SensorTags[i])
-                                    curNode.set_value(self.Data.read(self.SensorTags[i]))
-                                Time_stamp = self.Data.read("Time")
-                                
-                            #Append time if requested
-                            if self.Time_Mem != -1:
-                                curTime = self.checkNodeExists(dataObj, "Time")
-                                if curTime != None:
-                                    curTime.set_value(Time_stamp)
-                                else:
-                                    self.OPC_Sensor_Nodes.append(dataObj2.add_variable(self.idx, "Time", Time_stamp))
-                                    self.OPC_Actuator_Nodes.append(dataObj2.add_variable(self.idx, "Time", Time_stamp))
-                        
-                        #perform scan time delay if requested
-                        if self.Scan_Time != 0:
-                                time1 = 0
-                                while time1 < self.Scan_Time and not self.Event.is_set():
-                                    time1 = time.time() - time_end
-                        #!!!!!!!!!!!!!!!CHANGE ME!!!!!!!!!!!!!!
-                        if self.actuator:
-                            #gather and report data from PLC
-                            for i in range(int(len(self.ActuatorTags))):
-                                Actuator_data[i] = self.checkNodeExists(dataObj2, self.ActuatorTags[i]).get_value()
-                                if Actuator_data[i] is not None:
-                                    acutation_signal = bytes(self.ActuatorTags[i]+":"+str(Actuator_data[i])+" ",'utf-8')
-                                    DB.send(acutation_signal,zmq.NOBLOCK)
-                                else:
-                                    print("No Accessible Actuation Data")
-                                    
-                        #We don't write to PLC because we are a server
-                
-                finally:
-                    time_end = time.time()
-                    
-                    #if actuator, then close connection
-                    if self.actuator:
-                        DB.close()
-                        
-                    #Inform everyone we have closed up
-                    logging.info('Thread stopped for PLC IP:%s' % self.PLC.ip)
-                    
-                    #close connection, remove subscriptions, etc
-                    self.server.stop()
-            case (OPCUA_Client()):
-                #Define PLC address
-                client = Client("opc.tcp://" + self.PLC.ip + ":4840")
-                client.connect()
-                nodeList = [None] * len(self.SensorTags)
-            
-                #Setup timing mechanism
-                time_end = time.time()
-                
-                if self.actuator==False:
-                    context = zmq.Context()
-                    DB = context.socket(zmq.PUSH)
-                    serverAddress = self.serAdd.get(block=True)
-                    DB.connect("tcp://"+serverAddress+":5555")
-                    logging.info("Successfully connected to server: " + serverAddress)
-                
-                while not self.Event.is_set():
-
-                    #gather data if sensor is active
+            #Setup timing mechanism
+            time_end = time.time()
+            try:
+                while True:
+                    time.sleep(1)
                     if self.sensor:
-                        #get data lock and release
                         with self.Lock:
+                            #Update tag values
                             for i in range(len(self.SensorTags)):
-                                Sensor_data[i] = self.Data.read(self.SensorTags[i])
-                                nodeList[i] = client.get_node('ns=3;s="OPC_UA_DB"."OPC_Data"."' + self.SensorTags[i] + '"')
-                                
+                                curNode = self.checkNodeExists(dataObj, self.SensorTags[i])
+                                curNode.set_value(self.Data.read(self.SensorTags[i]))
+                                print(curNode.get_value())
                             Time_stamp = self.Data.read("Time")
-                    
-                        #write out to PLC
-                        for i in range(len(nodeList)):
-                            dv = ua.DataValue(ua.Variant(self.Data.read(self.SensorTags[i]), ua.VariantType.Float))
-                            dv.ServerTimestamp = None
-                            dv.SourceTimestamp = None
-                            nodeList[i].set_value(dv)
-                    
-                        #write out Time if requested
+                            
+                        #Append time if requested
                         if self.Time_Mem != -1:
-                            client.get_node('ns=3;s="OPC_UA_DB"."OPC_Data"."' + self.Time_Mem + '"').set_value(Time_stamp)
-                
+                            curTime = self.checkNodeExists(dataObj, "Time")
+                            if curTime != None:
+                                curTime.set_value(Time_stamp)
+                            else:
+                                self.OPC_Sensor_Nodes.append(dataObj2.add_variable(self.idx, "Time", Time_stamp))
+                                self.OPC_Actuator_Nodes.append(dataObj2.add_variable(self.idx, "Time", Time_stamp))
+                    
                     #perform scan time delay if requested
                     if self.Scan_Time != 0:
                             time1 = 0
                             while time1 < self.Scan_Time and not self.Event.is_set():
                                 time1 = time.time() - time_end
-                
+                    #!!!!!!!!!!!!!!!CHANGE ME!!!!!!!!!!!!!!
                     if self.actuator:
                         #gather and report data from PLC
                         for i in range(int(len(self.ActuatorTags))):
-                            Actuator_data[i] = nodeList[i] = client.get_node('ns=3;s="OPC_UA_DB"."OPC_Data"."' + self.ActuatorTags[i] + '"').get_value()
+                            Actuator_data[i] = self.checkNodeExists(dataObj2, self.ActuatorTags[i]).get_value()
                             if Actuator_data[i] is not None:
                                 acutation_signal = bytes(self.ActuatorTags[i]+":"+str(Actuator_data[i])+" ",'utf-8')
                                 DB.send(acutation_signal,zmq.NOBLOCK)
                             else:
-                                print("Read Failure on IP: %s" % self.PLC.ip)
-
-                    time_end = time.time()
-            case _:            
-                #connect to the PLC
-                self.PLC.connect()
-
-                #  ZMQ socket to talk to server
-                if self.actuator:
-                    context = zmq.Context()
-                    DB = context.socket(zmq.PUSH)
-                    serverAddress = self.serAdd.get(block=True)
-                    DB.connect("tcp://"+serverAddress+":5555")
-                    logging.info("Successfully connected to server: " + serverAddress)
+                                print("No Accessible Actuation Data")
+                                
+                    #We don't write to PLC because we are a server
             
-                #Setup timing mechanism
+            finally:
                 time_end = time.time()
-
-                while not self.Event.is_set():
-
-                    #gather data if sensor is active
-                    if self.sensor:
-                        #get data lock and release
-                        with self.Lock:
-                            for i in range(len(self.SensorTags)):
-                                Sensor_data[i] = self.Data.read(self.SensorTags[i])
-                            Time_stamp = self.Data.read("Time")
-                    
-                        #write out to PLC
-                        for i in range(len(self.SensorTags)):
-                            self.PLC.write(int(self.SensorMem[i]),Sensor_data[i])
-                    
-                        #write out Time if requested
-                        if self.Time_Mem != -1:
-                            self.PLC.write(int(self.Time_Mem),Time_stamp)
                 
-                    #perform scan time delay if requested
-                    if self.Scan_Time != 0:
-                            time1 = 0
-                            while time1 < self.Scan_Time and not self.Event.is_set():
-                                time1 = time.time() - time_end
-                
-                    if self.actuator:
-                        #gather and report data from PLC
-                        for i in range(int(len(self.ActuatorTags))):
-                            Actuator_data[i] = self.PLC.read(int(self.ActuatorMem[i]))
-                            if Actuator_data[i] is not None:
-                                acutation_signal = bytes(self.ActuatorTags[i]+":"+str(Actuator_data[i])+" ",'utf-8')
-                                DB.send(acutation_signal,zmq.NOBLOCK)
-                            else:
-                                print("Read Failure on IP: %s" % self.PLC.ip)
-
-                    time_end = time.time()
-            
-                #close up shop
-                self.PLC.close()
                 #if actuator, then close connection
                 if self.actuator:
                     DB.close()
+                    
                 #Inform everyone we have closed up
                 logging.info('Thread stopped for PLC IP:%s' % self.PLC.ip)
-                sys.exit(0)
+                
+                #close connection, remove subscriptions, etc
+                self.server.stop()
+                
+        elif(isinstance(self.PLC, OPCUA_Client)):
+            #Define PLC address
+            client = Client(self.PLC.ip)
+            #client = Client("opc.tcp://" + self.PLC.ip + ":14840/groov")
+            try:
+                client.connect()
+            except:
+                logging.error("Error: Cannot connect to OPCUA client at address " + str(self.PLC.ip))
+                self.Event.set()
+
+            nodeList = [None] * len(self.SensorTags)
+            
+            #Setup timing mechanism
+            time_end = time.time()
+            
+            if self.actuator!=False:
+                context = zmq.Context()
+                DB = context.socket(zmq.PUSH)
+                serverAddress = self.serAdd.get(block=True)
+                DB.connect("tcp://"+serverAddress+":5555")
+                logging.info("Successfully connected to server: " + serverAddress)
+            
+            #physicsDB = []
+            
+            while not self.Event.is_set():
+
+                #gather data if sensor is active
+                if self.sensor:
+                    #get data lock and release
+                    with self.Lock:
+                        for i in range(len(self.SensorTags)):
+                            curList = []
+                            Sensor_data[i] = self.Data.read(self.SensorTags[i])
+                            nodeList[i] = client.get_node('ns=' + self.SensorNS[i] + ';s=' + self.SensorMem[i])
+                        Time_stamp = self.Data.read("Time")
+                
+                    #physicsDB.append(curList)
+                
+                    #write out to PLC
+                    for i in range(len(nodeList)):
+                        dv = ua.DataValue(ua.Variant((Sensor_data[i] + self.SensorOffset[i]) * self.SensorScaling[i], ua.VariantType.Float))
+                        dv.ServerTimestamp = None
+                        dv.SourceTimestamp = None
+                        nodeList[i].set_value(dv)
+                
+                    #write out Time if requested
+                    if self.Time_Mem != -1:
+                        client.get_node('ns=' + self.Time_NS + ';s=' + self.Time_Mem).set_value(Time_stamp * self.TimeScaling)
+            
+                #perform scan time delay if requested
+                if self.Scan_Time != 0:
+                        time1 = 0
+                        while time1 < self.Scan_Time and not self.Event.is_set():
+                            time1 = time.time() - time_end
+            
+                if self.actuator:
+                    #gather and report data from PLC
+                    for i in range(int(len(self.ActuatorTags))):
+                        Actuator_data[i] = (client.get_node('ns=' + self.ActuatorNS[i] + ';s=' + self.ActuatorMem[i]).get_value() + self.ActuatorOffset[i]) * self.ActuatorScaling[i]
+                        if Actuator_data[i] is not None:
+                            acutation_signal = bytes(self.ActuatorTags[i]+":"+str(Actuator_data[i])+" ",'utf-8')
+                            DB.send(acutation_signal,zmq.NOBLOCK)
+                        else:
+                            print("Read Failure on IP: %s" % self.PLC.ip)
+
+                time_end = time.time()
+        else:
+            #connect to the PLC
+            self.PLC.connect()
+
+            #  ZMQ socket to talk to server
+            if self.actuator:
+                context = zmq.Context()
+                DB = context.socket(zmq.PUSH)
+                serverAddress = self.serAdd.get(block=True)
+                DB.connect("tcp://"+serverAddress+":5555")
+                logging.info("Successfully connected to server: " + serverAddress)
+        
+            #Setup timing mechanism
+            time_end = time.time()
+
+            while not self.Event.is_set():
+
+                #gather data if sensor is active
+                if self.sensor:
+                    #get data lock and release
+                    with self.Lock:
+                        for i in range(len(self.SensorTags)):
+                            Sensor_data[i] = self.Data.read(self.SensorTags[i])
+                        Time_stamp = self.Data.read("Time")
+                
+                    #write out to PLC
+                    for i in range(len(self.SensorTags)):
+                        self.PLC.write(int(self.SensorMem[i]),Sensor_data[i])
+                
+                    #write out Time if requested
+                    if self.Time_Mem != -1:
+                        self.PLC.write(int(self.Time_Mem),Time_stamp)
+            
+                #perform scan time delay if requested
+                if self.Scan_Time != 0:
+                        time1 = 0
+                        while time1 < self.Scan_Time and not self.Event.is_set():
+                            time1 = time.time() - time_end
+            
+                if self.actuator:
+                    #gather and report data from PLC
+                    for i in range(int(len(self.ActuatorTags))):
+                        Actuator_data[i] = self.PLC.read(int(self.ActuatorMem[i]))
+                        if Actuator_data[i] is not None:
+                            acutation_signal = bytes(self.ActuatorTags[i]+":"+str(Actuator_data[i])+" ",'utf-8')
+                            DB.send(acutation_signal,zmq.NOBLOCK)
+                        else:
+                            print("Read Failure on IP: %s" % self.PLC.ip)
+
+                time_end = time.time()
+        
+            #close up shop
+            self.PLC.close()
+            #if actuator, then close connection
+            if self.actuator:
+                DB.close()
+            #Inform everyone we have closed up
+            logging.info('Thread stopped for PLC IP:%s' % self.PLC.ip)
+            sys.exit(0)
 
     #Define how to start the connector thread
     def run(self):
@@ -782,8 +803,8 @@ def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
             try:
                 IDX = msg_split.index(Tags[i])
                 #print(msg_split)
-                Values[i] = float(msg_split[IDX+2])
-                Time_Stamp = float(msg_split[IDX+3])
+                Values[i] = float(msg_split[IDX+1])
+                Time_Stamp = float(msg_split[IDX+2])
             except:
                 logging.info("Tag: %s not in UDP message..." % Tags[i])
         
