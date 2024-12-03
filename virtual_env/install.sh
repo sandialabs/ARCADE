@@ -81,7 +81,7 @@ if [ $MiniMegaFlag = 1 ]; then
 fi
 
 #make sure that permissions are correct for rc.local
-sudo chmod -ugo +x rc.local/*
+sudo chmod ugo+x rc.local/*
 
 #copy install files
 for folder in asherah_sim_vm_files Capstone DB openplc_vm_files rc.local scada services; do sudo cp -r $mm_path/$folder /opt/minimega/; done
