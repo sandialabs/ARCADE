@@ -28,17 +28,14 @@ sudo docker exec -it asherah_dev sh -c "apt update -y && DEBIAN_FRONTEND=noninte
 #Apt update
 sudo docker exec -it asherah_dev sh -c "apt-get update -y"
 
-#Install python3
-sudo docker exec -it asherah_dev sh -c "apt install -y python3 python3-pip"
+#Install python3 and python zmq
+sudo docker exec -it asherah_dev sh -c "apt install -y python3 python3-pip python3-zmq"
 
 #install libzmq
 sudo docker exec -it asherah_dev sh -c "apt-get install -y libzmq3-dev"
 
 #Install pymodbus
-sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus"
-
-#Install zmq
-sudo docker exec -it asherah_dev sh -c "pip3 install zmq"
+sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus opcua --break-system-packages"
 
 #Install ifconfig to container
 sudo docker exec -it asherah_dev sh -c "apt install -y net-tools"
@@ -47,7 +44,7 @@ sudo docker exec -it asherah_dev sh -c "apt install -y net-tools"
 sudo docker exec -it asherah_dev sh -c "cp /os/rc.local/rc.local.asherah /etc/rc.local"
 
 #install lightweight TE
-sudo docker exec -it asherah_dev sh -c "apt install -y nano"
+sudo docker exec -it asherah_dev sh -c "apt install -y nano vim"
 
 #Install ip tool to container
 sudo docker exec -it asherah_dev sh -c "apt install -y iproute2"

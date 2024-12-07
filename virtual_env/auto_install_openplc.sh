@@ -42,7 +42,7 @@ sudo docker exec -it openplc_dev sh -c "cp /os/openplc_vm_files/custom_plc_setup
 sudo docker exec -it openplc_dev sh -c "apt install -y net-tools"
 
 #install lightweight TE
-sudo docker exec -it openplc_dev sh -c "apt install -y nano"
+sudo docker exec -it openplc_dev sh -c "apt install -y nano vim"
 
 #Install ip tool to container
 sudo docker exec -it openplc_dev sh -c "apt install -y iproute2"

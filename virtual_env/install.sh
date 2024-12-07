@@ -4,11 +4,6 @@
 # Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains 
 # certain rights in this software.
 
-#  S-Function connector program to import and export data and control
-#  signals in simulink
-
-#  Compile via mex: mex sfun_connector.c -lpthread -lrt
-
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -33,14 +28,14 @@ sudo lshw &>> system_info.txt
 #update systems and install dependancies
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils extlinux debootstrap
+sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils extlinux debootstrap genisoimage
 sudo apt install -y openvswitch-switch qemu-kvm qemu-utils dnsmasq ntfs-3g iproute2 curl libpcap-dev vim htop dbus-x11 wget git gcc wireshark
 
-#check if Go 1.18.2 is installed
+#check if Go 1.21.13 is installed
 GoFlag=0
 if [ -f /usr/local/go/bin/go ]; then
     export PATH=$PATH:/usr/local/go/bin
-    if go version | grep -q "go1.18.2"; then
+    if go version | grep -q "go1.21.13"; then
             echo "Go is correct version"
             GoFlag=1
     fi
@@ -48,17 +43,17 @@ fi
 if [ $GoFlag = 0 ]; then
    echo "Removing any old go packages"
    sudo rm -r /usr/local/go
-   echo "Installing GoLang V1.18.2"
-   wget https://go.dev/dl/go1.18.2.linux-amd64.tar.gz
-   sudo tar -C /usr/local -xzf go1.18.2.linux-amd64.tar.gz
-   sudo rm go1.18.2.linux-amd64.tar.gz
+   echo "Installing GoLang V1.21.13"
+   wget https://go.dev/dl/go1.21.13.linux-amd64.tar.gz
+   sudo tar -C /usr/local -xzf go1.21.13.linux-amd64.tar.gz
+   sudo rm go1.21.13.linux-amd64.tar.gz
    export PATH=$PATH:/usr/local/go/bin
 fi
 
 #check if Minimega is installed
 MiniMegaFlag=0
 if [ -f /opt/minimega/bin/minimega ]; then
-   read -r -p "Minimega is already installed. Do you want to reinstall it? [y/N] " response
+   read -r -p "Minimega is already installed. Do you want to reinstall it? This will delete the /opt/minimega folder! [y/N] " response
    response=${response,,}    # tolower
    if [[ "$response" =~ ^(yes|y)$ ]]; then
            MiniMegaFlag=1
@@ -160,8 +155,15 @@ if [ ! -f /opt/minimega/images/scada.img ]; then
 fi
 
 if [ ! -f /opt/minimega/images/kali.img ]; then
-   sudo ./auto_install_kali_gui.sh
-   sudo mv kali.img images/ ;
+   read -r -p "Install full Kali Linux instead of limited version? [y/N] " response
+   response=${response,,}    # tolower
+   if [[ "$response" =~ ^(yes|y)$ ]]; 
+        sudo ./auto_install_kali_all_gui.sh
+        sudo mv kali.img images/ ;
+   else
+        sudo ./auto_install_kali_gui.sh
+        sudo mv kali.img images/ ;
+   fi   
 fi
 
 echo "cleaning up"

@@ -59,7 +59,7 @@ sudo docker exec -it scada_dev sh -c "apt update -y"
 sudo docker exec -it scada_dev sh -c "apt install -y net-tools"
 
 #install lightweight TE
-sudo docker exec -it scada_dev sh -c "apt install -y nano"
+sudo docker exec -it scada_dev sh -c "apt install -y nano vim"
 
 #Install ip tool to container
 sudo docker exec -it scada_dev sh -c "apt install -y iproute2"
