@@ -26,14 +26,9 @@ sudo docker exec -it kali_dev sh -c "echo 'root:root' | chpasswd"
 #Apt update
 sudo docker exec -it kali_dev sh -c "apt update -y && DEBIAN_FRONTEND=noninteractive"
 
-
 #Install wireshark and ettercap
 sudo docker exec -it kali_dev sh -c "apt install -y gnome && DEBIAN_FRONTEND=noninteractive"
 sudo docker exec -it kali_dev sh -c "apt install -y wireshark ettercap-common ettercap-graphical"
-
-#install full Kali Package
-sudo docker exec -it kali_dev sh -c "apt install -y kali-linux-all"
-
 
 #Install ifconfig to container
 sudo docker exec -it kali_dev sh -c "apt install -y net-tools"
