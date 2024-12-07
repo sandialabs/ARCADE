@@ -23,30 +23,13 @@ EOF"
 #change password of the root user for container
 sudo docker exec -it kali_dev sh -c "echo 'root:root' | chpasswd"
 
-
 #Apt update
 sudo docker exec -it kali_dev sh -c "apt update -y && DEBIAN_FRONTEND=noninteractive"
 
-#Install kali GUI
-#sudo docker exec -it kali_dev sh -c "apt install -y kali-desktop-xfce lightdm"
-#sudo docker exec -it kali_dev sh -c "apt install -y kali-desktop-gnome"
 
 #Install wireshark and ettercap
 sudo docker exec -it kali_dev sh -c "apt install -y gnome && DEBIAN_FRONTEND=noninteractive"
 sudo docker exec -it kali_dev sh -c "apt install -y wireshark ettercap-common ettercap-graphical"
-
-#Edit configuration files
-#sudo docker exec -it kali_dev sh -c 'echo "/usr/sbin/lightdm" > /etc/X11/default-display-manager'
-#sudo docker exec -it kali_dev sh -c 'echo "\
-#[LightDM]\n\
-#[Seat:*]\n\
-#type=xremote\n\
-#xserver-hostname=host.docker.internal\n\
-#xserver-display-number=0\n\
-#autologin-user=root\n\
-#autologin-user-timeout=0\n\
-#" > /etc/lightdm/lightdm.conf'
-#change password of the root user for container
 
 
 #Install ifconfig to container
@@ -103,12 +86,8 @@ sudo docker exec -it kali_dev sh -c "pip install pymodbus --break-system-package
 #Commit docker container to image
 sudo docker commit kali_dev kali_dev
 
-#Determine image size
-IMG_SIZE=1000000000 #2.6 GB size of the image, shell for container contents
-# IMG_SIZE=2150000000 #2.6 GB size of the image, shell for container contents
-
 #Create Image file
-sudo docker exec -it kali_dev sh -c "dd if=/dev/zero of=/os/kali.img bs=$IMG_SIZE count=7"
+sudo docker exec -it kali_dev sh -c "dd if=/dev/zero of=/os/kali.img bs=32M count=1344"
 
 #Then need to image the VM
 sudo docker exec -it kali_dev sh -c "sfdisk /os/kali.img <<EOF
