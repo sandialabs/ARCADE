@@ -155,7 +155,7 @@ if [ ! -f /opt/minimega/images/scada.img ]; then
 fi
 
 if [ ! -f /opt/minimega/images/kali.img ]; then
-   read -r -p "Install full Kali Linux instead of limited version? [y/N] " response
+   read -r -p "Install full Kali Linux instead of limited version? Requires +42Gb. [y/N] " response
    response=${response,,}    # tolower
    if [[ "$response" =~ ^(yes|y)$ ]]; then
         sudo ./auto_install_kali_all_gui.sh

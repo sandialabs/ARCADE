@@ -35,7 +35,7 @@ sudo docker exec -it kali_dev sh -c "apt install -y wireshark ettercap-common et
 sudo docker exec -it kali_dev sh -c "apt install -y net-tools"
 
 #install full Kali Package
-sudo docker exec -it kali_dev sh -c "apt install -y kali-linux-all"
+sudo docker exec -it kali_dev sh -c "apt install -y kali-linux-everything"
 
 #Copy the correct rc.local into container
 sudo docker exec -it kali_dev sh -c "cp /os/rc.local/rc.local.kali /etc/rc.local"
@@ -89,7 +89,7 @@ sudo docker exec -it kali_dev sh -c "pip install pymodbus --break-system-package
 sudo docker commit kali_dev kali_dev
 
 #Create Image file
-sudo docker exec -it kali_dev sh -c "dd if=/dev/zero of=/os/kali.img bs=32M count=1344"
+sudo docker exec -it kali_dev sh -c "dd if=/dev/zero of=/os/kali.img bs=1G seek=42 count=0"
 
 #Then need to image the VM
 sudo docker exec -it kali_dev sh -c "sfdisk /os/kali.img <<EOF
@@ -97,7 +97,7 @@ label: dos
 label-id: 0x5d8b75fc
 device: new.img
 unit: sectors
-kali.img1 : start=2048, size=13669827, type=83, bootable
+kali.img1 : start=2048, type=83, bootable
 EOF"
 #last 7570905
 

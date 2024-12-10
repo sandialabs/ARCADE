@@ -85,7 +85,7 @@ sudo docker exec -it kali_dev sh -c "pip install pymodbus --break-system-package
 sudo docker commit kali_dev kali_dev
 
 #Create Image file
-sudo docker exec -it kali_dev sh -c "dd if=/dev/zero of=/os/kali.img bs=32M count=224"
+sudo docker exec -it kali_dev sh -c "dd if=/dev/zero of=/os/kali.img bs=1G seek=7 count=0"
 
 #Then need to image the VM
 sudo docker exec -it kali_dev sh -c "sfdisk /os/kali.img <<EOF
