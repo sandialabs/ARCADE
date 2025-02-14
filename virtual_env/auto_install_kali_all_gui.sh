@@ -84,6 +84,7 @@ sudo docker exec -it kali_dev sh -c "chown -R kali /home/kali/Capstone"
 #Install pymodbus
 sudo docker exec -it kali_dev sh -c "apt install -y python3-pip iputils-ping vim"
 sudo docker exec -it kali_dev sh -c "pip install pymodbus --break-system-packages"
+sudo docker exec -it kali_dev sh -c "pip install pymodbus" #20.04 fix
 
 #Commit docker container to image
 sudo docker commit kali_dev kali_dev

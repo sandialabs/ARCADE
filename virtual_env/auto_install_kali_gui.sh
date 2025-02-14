@@ -80,6 +80,7 @@ sudo docker exec -it kali_dev sh -c "chown -R kali /home/kali/Capstone"
 #Install pymodbus
 sudo docker exec -it kali_dev sh -c "apt install -y python3-pip iputils-ping vim"
 sudo docker exec -it kali_dev sh -c "pip install pymodbus --break-system-packages"
+sudo docker exec -it kali_dev sh -c "pip install pymodbus" #20.04 fix
 
 #Commit docker container to image
 sudo docker commit kali_dev kali_dev
@@ -93,7 +94,7 @@ label: dos
 label-id: 0x5d8b75fc
 device: new.img
 unit: sectors
-kali.img1 : start=2048, size=13669827, type=83, bootable
+kali.img1 : start=2048, size=6.5G, type=83, bootable
 EOF"
 #last 7570905
 

@@ -4,7 +4,7 @@ This installer will setup Minimega and produce generic virtual machines which ar
 
 ## INSTALLING
 
-**Tested on Ubuntu 20.04, 22.04, and 24.04**
+**Tested on Ubuntu 20.04 and 22.04**
 
 Open a terminal in the environment folderse and run the following:
 

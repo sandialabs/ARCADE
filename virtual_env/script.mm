@@ -35,9 +35,9 @@ vm config disk /opt/minimega/images/scada.img
 vm config net HMI
 vm launch kvm SCADA
 
-
-# disk inject  /opt/minimega/images/kali.qcow2 files /opt/minimega/HMI_INS_BR.zip:/home/kali/Downloads/HMI_INS_BR.zip
 vm config disk /opt/minimega/images/kali.img 
+vm config vcpus 4
+vm config memory 8192
 vm launch kvm ATTACK
 
 vm start all

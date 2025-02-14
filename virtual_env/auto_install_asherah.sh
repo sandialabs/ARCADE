@@ -34,7 +34,10 @@ sudo docker exec -it asherah_dev sh -c "apt install -y python3 python3-pip pytho
 #install libzmq
 sudo docker exec -it asherah_dev sh -c "apt-get install -y libzmq3-dev"
 
-#Install pymodbus
+#Install pymodbus and opcua if installing on 20.04
+sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus opcua"
+
+#Install pymodbus and opcua if installing on 22.04+ 
 sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus opcua --break-system-packages"
 
 #Install ifconfig to container
