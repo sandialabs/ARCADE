@@ -26,16 +26,15 @@ sudo docker exec -it kali_dev sh -c "echo 'root:root' | chpasswd"
 #Apt update
 sudo docker exec -it kali_dev sh -c "apt update -y && DEBIAN_FRONTEND=noninteractive"
 
-
-#Install wireshark and ettercap
-sudo docker exec -it kali_dev sh -c "apt install -y gnome && DEBIAN_FRONTEND=noninteractive"
-sudo docker exec -it kali_dev sh -c "apt install -y wireshark ettercap-common ettercap-graphical"
-
 #Install ifconfig to container
 sudo docker exec -it kali_dev sh -c "apt install -y net-tools"
 
 #install full Kali Package
 sudo docker exec -it kali_dev sh -c "apt install -y kali-linux-everything"
+
+#Install wireshark and ettercap
+sudo docker exec -it kali_dev sh -c "apt install -y gnome && DEBIAN_FRONTEND=noninteractive"
+sudo docker exec -it kali_dev sh -c "apt install -y wireshark ettercap-common ettercap-graphical"
 
 #Copy the correct rc.local into container
 sudo docker exec -it kali_dev sh -c "cp /os/rc.local/rc.local.kali /etc/rc.local"
@@ -72,6 +71,9 @@ sudo docker exec -it kali_dev sh -c "echo 'kali:kali' | chpasswd"
 sudo docker exec -it kali_dev sh -c "mkdir /home/kali/.config"
 sudo docker exec -it kali_dev sh -c "echo 'yes' >> /home/kali/.config/gnome-initial-setup-done"
 
+#add Kali user to sudo
+sudo docker exec -it kali_dev sh -c "adduser kali sudo"
+
 #auto login enable
 sudo docker exec -it kali_dev sh -c "sed -i 's/#  AutomaticLoginEnable = true/  AutomaticLoginEnable = true/g' /etc/gdm3/daemon.conf"
 sudo docker exec -it kali_dev sh -c "sed -i 's/#  AutomaticLogin = user1/  AutomaticLogin = kali/g' /etc/gdm3/daemon.conf"
@@ -84,7 +86,6 @@ sudo docker exec -it kali_dev sh -c "chown -R kali /home/kali/Capstone"
 #Install pymodbus
 sudo docker exec -it kali_dev sh -c "apt install -y python3-pip iputils-ping vim"
 sudo docker exec -it kali_dev sh -c "pip install pymodbus --break-system-packages"
-sudo docker exec -it kali_dev sh -c "pip install pymodbus" #20.04 fix
 
 #Commit docker container to image
 sudo docker commit kali_dev kali_dev

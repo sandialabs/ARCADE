@@ -176,16 +176,12 @@ class MB_PLC:
         self.mlock.acquire()
         try:
             Check_write = client.write_registers(mem_addr, payload)
+            while Check_write.isError():
+                Check_write = client.write_registers(mem_addr, payload)
         except:
             print("Write Check has failed!!\n")
             ### Add error checking ###
             pass
-
-        while Check_write.isError():
-            try:
-                Check_write = client.write_registers(mem_addr, payload)
-            except:
-                pass
             
         self.mlock.release()
 

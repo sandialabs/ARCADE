@@ -34,11 +34,9 @@ sudo docker exec -it asherah_dev sh -c "apt install -y python3 python3-pip pytho
 #install libzmq
 sudo docker exec -it asherah_dev sh -c "apt-get install -y libzmq3-dev"
 
-#Install pymodbus and opcua if installing on 20.04
-sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus opcua"
-
-#Install pymodbus and opcua if installing on 22.04+ 
+#Install pymodbus
 sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus opcua --break-system-packages"
+sudo docker exec -it asherah_dev sh -c "pip3 install pymodbus opcua"
 
 #Install ifconfig to container
 sudo docker exec -it asherah_dev sh -c "apt install -y net-tools"
@@ -57,6 +55,10 @@ sudo docker exec -it asherah_dev sh -c "apt install -y init"
 
 #Install fdisk
 sudo docker exec -it asherah_dev sh -c "apt install -y fdisk"
+
+#Install updates
+sudo docker exec -it asherah_dev sh -c "apt update -y"
+sudo docker exec -it asherah_dev sh -c "apt upgrade -y"
 
 #Copy miniccc to container
 sudo docker exec -it asherah_dev sh -c "cp -r /os/DB /opt/DB"

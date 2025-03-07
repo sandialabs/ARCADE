@@ -17,8 +17,8 @@
                     "SensorMem": "2052,2054,2056",
                     "ActuatorTags": "TB_IsoValveCmd",
                     "ActuatorMem": "2058",
-                    "ScanTime": "0.1",
-                    "TimeMem": "2048",
+                    "Scan_Time": "0.1",
+                    "Time_Mem": "2048",
                     "MemFormat": "32_float",
                     "Endianess":"big,big",
                     "Port":"502"
@@ -30,8 +30,8 @@
                     "SensorMem": "2052",
                     "ActuatorTags": "RC1_PumpSpeedCmd",
                     "ActuatorMem": "2054",
-                    "ScanTime": "0.1",
-                    "TimeMem": "2048",
+                    "Scan_Time": "0.1",
+                    "Time_Mem": "2048",
                     "MemFormat": "32_float",
                     "Endianess":"big,big",
                     "Port":"502"

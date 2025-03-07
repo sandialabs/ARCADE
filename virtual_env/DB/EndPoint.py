@@ -461,11 +461,11 @@ class Connector:
         config_list_defaults = {"SensorNS" : "3","SensorOffset" : 0,"SensorScaling" : 1,"ActuatorNS" : "3","ActuatorOffset" : 0,"ActuatorScaling" : 1}
         for c in config_opts:
             if self.config.validate(c):
-                exec( 'self.' + c + '=self.config.collect(c)' )
+                setattr(self, c, self.config.collect(c)[0])
         
         for c in config_list_opts:
             if self.config.validate(c):
-                exec( 'self.' + c + '=self.config.collect_list(c)' )
+                setattr(self, c, self.config.collect_list(c))
         
         #check for actuator and sensor options
         if self.ActuatorTags:
@@ -487,12 +487,14 @@ class Connector:
                 if eval("len(self."+c+") != len(self.SensorMem) and len(self."+c+") > 0"):
                     exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.SensorMem) - len(self."+c+")))")
                 elif eval("len(self."+c+") <= 0"):
-                    exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.SensorMem))]")
+                    setattr(self, c, [config_list_defaults[c] for i in range(len(self.SensorMem))])
+                    #exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.SensorMem))]")
             elif c[:8] == 'Actuator' and self.actuator and c != "ActuatorTags" and c != "ActuatorMem":
                 if eval("len(self."+c+") != len(self.ActuatorMem) and len(self."+c+") > 0"):
-                    exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.ActuatorMem) - len(self."+c+")))")
+                    exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.ActuatorMem) - len(self."+c+")))")    
                 elif eval("len(self."+c+") <= 0"):
-                    exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.ActuatorMem))]")
+                    #exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.ActuatorMem))]")
+                    setattr(self, c, [config_list_defaults[c] for i in range(len(self.ActuatorMem))])
             #make sure that all the floats are actually converted to floats
             if c[-6:] == 'Offset' or c[-6:] == 'caling':
                 exec("self."+c+" = [float(x) for x in self."+c+"]")
@@ -649,12 +651,13 @@ class Connector:
                 
                     #write out Time if requested
                     if self.Time_Mem != -1:
-                        client.get_node('ns=' + self.Time_NS + ';s=' + self.Time_Mem).set_value(Time_stamp * self.TimeScaling)
+                        Time_dv = ua.DataValue(ua.Variant((Time_stamp * float(self.TimeScaling)), ua.VariantType.Float))
+                        client.get_node('ns=' + self.TimeNS + ';s=' + self.Time_Mem).set_value(Time_dv)
             
                 #perform scan time delay if requested
                 if self.Scan_Time != 0:
-                        time1 = 0
-                        while time1 < self.Scan_Time and not self.Event.is_set():
+                        time1 = 0.0
+                        while time1 < float(self.Scan_Time) and not self.Event.is_set():
                             time1 = time.time() - time_end
             
                 if self.actuator:
@@ -704,7 +707,7 @@ class Connector:
                 #perform scan time delay if requested
                 if self.Scan_Time != 0:
                         time1 = 0
-                        while time1 < self.Scan_Time and not self.Event.is_set():
+                        while time1 < float(self.Scan_Time) and not self.Event.is_set():
                             time1 = time.time() - time_end
             
                 if self.actuator:

@@ -4,7 +4,7 @@ This file is responsible for delivering simulation data to OT endpoint systems. 
 
 
 # Usage
-*python3 Multi_Proto_Endpoint.py*
+*python3 Endpoint.py*
 
 No arguments are supplied, as program settings are derived from initialization message
 When run, the program waits for an initialization message from the Data Broker. This message is equivalent to the content found in the input.json file. The program then sends simulation information to one or multiple PLCs, and returns any specified values from PLCs back to the simulation engine. The endpoint has three modes of operation, selected based on the "Proto" tag in the initialization message. The "initialization message" in this context refers to the content of the "input.json" file used to run the Data Broker program component.
