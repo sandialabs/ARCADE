@@ -1,2 +1,0 @@
-bash: hostnamectl: command not found
-bash: sudo: command not found
