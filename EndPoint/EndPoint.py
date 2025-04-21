@@ -227,13 +227,16 @@ class MB_PLC:
 
         if results is not None:
             #Set up decoder
-            decoder = BinaryPayloadDecoder.fromRegisters(results.registers, byteorder=self.byteOrder, wordorder=self.wordOrder)
+            try:
+                decoder = BinaryPayloadDecoder.fromRegisters(results.registers, byteorder=self.byteOrder, wordorder=self.wordOrder)
             
-            return Decode_dict[formating](decoder)
-            #return decoded value
+                return Decode_dict[formating](decoder)
+                #return decoded value
+            except:
+                return None
         else:
             #return a Nonetype
-            return results
+            return None
 
     #define how to read coils from PLC
     def readcoil(self, mem_addr):
@@ -553,7 +556,7 @@ class Connector:
             #Setup timing mechanism
             time_end = time.time()
             try:
-                while True:
+                while not self.Event.is_set():
                     time.sleep(1)
                     if self.sensor:
                         with self.Lock:
@@ -576,7 +579,7 @@ class Connector:
                     #perform scan time delay if requested
                     if self.Scan_Time != 0:
                             time1 = 0
-                            while time1 < self.Scan_Time and not self.Event.is_set():
+                            while float(time1) < float(self.Scan_Time) and not self.Event.is_set():
                                 time1 = time.time() - time_end
                     #!!!!!!!!!!!!!!!CHANGE ME!!!!!!!!!!!!!!
                     if self.actuator:
