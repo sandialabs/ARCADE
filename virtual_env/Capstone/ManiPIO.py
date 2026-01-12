@@ -41,7 +41,7 @@ class MB_PLC:
 
     def __init__(self, IP, Port):
         self.ip = IP
-        self.Mem_default = '32_float'
+        self.Mem_default = 'FLOAT32'
         self.port = Port
         self.client = ModbusClient(IP, port=self.port)
         self.byteOrder = Endian.BIG
@@ -101,7 +101,7 @@ class MB_PLC:
         decoder = BinaryPayloadDecoder.fromRegisters(results.registers, byteorder=self.byteOrder, wordorder=self.wordOrder)
 
         #decoder dictionary
-        Decode_dict = { '16_float':float_16, '32_float':float_32, '64_float':float_64, '16_int':int_16, '32_int':int_32, '64_int':int_64, '16_uint':uint_16, '32_uint':uint_32, '64_uint':uint_64 }
+        Decode_dict = { 'FLOAT16':float_16, 'FLOAT32':float_32, 'FLOAT64':float_64, 'INT16':int_16, 'INT32':int_32, 'INT64':int_64, 'UINT16':uint_16, 'UINT32':uint_32, 'UINT64':uint_64 }
 
         return Decode_dict[formating](decoder)
         #return decoded value
@@ -165,7 +165,7 @@ class MB_PLC:
         builder = BinaryPayloadBuilder(byteorder=self.byteOrder, wordorder=self.wordOrder)
 
         #encoder dictionary
-        Encode_dict = { '16_float':float_16, '32_float':float_32, '64_float':float_64, '16_int':int_16, '32_int':int_32, '64_int':int_64, '16_uint':uint_16, '32_uint':uint_32, '64_uint':uint_64 }
+        Encode_dict = { 'FLOAT16':float_16, 'FLOAT32':float_32, 'FLOAT64':float_64, 'INT16':int_16, 'INT32':int_32, 'INT64':int_64, 'UINT16':uint_16, 'UINT32':uint_32, 'UINT64':uint_64 }
 
         #Encode value with builder
         Encode_dict[formating](builder, value)

@@ -9,8 +9,9 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include "cJSON.h"
-void *init_Server(void *);
+void *init_Server();
 char *ReadFile();
 char *SimName();
-bool Read_flags();
+bool Read_flags(char *JSON_Catagory, char *flagname, bool default_condition);
+char *Read_Vars(char *JSON_Catagory, char *Varname, char *default_condition);
 #endif

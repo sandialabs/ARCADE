@@ -15,25 +15,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from experiment_manager import experiment_manager
-from arcade_server import arcade_server
+from Simulation_Manager import experiment_manager
+from Simulation_Manager import arcade_server
 import sys
 import threading
 
 #Server that listens for message from client and sims
-def start_server(exp_man, port):
-    server1 = arcade_server(exp_man, int(port))
+def start_server(exp_man, stop_event, port):
+    server1 = arcade_server.arcade_server(exp_man, stop_event, int(port))
     server_thread = threading.Thread(target=server1.start, args=())
     server_thread.start()
     return server_thread
 
 #Experiment manager that maintains the simulations
 def start_exp_man(max_active_simulations):
-    exp_man = experiment_manager(max_active_simulations)
+    # wait time in minutes after minimega kills job
+    wait_time = 1
+    exp_man = experiment_manager.experiment_manager(max_active_simulations, wait_time)
     exp_man_thread = threading.Thread(target=exp_man.run, args=(),daemon=True)
     exp_man_thread.start()
     return exp_man
 
+# run from arcade directory using following command
+# sudo python3 -m Simulation_Manager.main 9136 16
 if len(sys.argv) < 3:
     print ("Usage main.py <PORT> <MAX SIMULATIONS>")
     exit(1)
@@ -42,5 +46,7 @@ port = sys.argv[1]
 max_active_simulations = sys.argv[2]
 
 print("[STARTING]")
+stop_event = threading.Event()
+stop_event.clear()
 exp_man = start_exp_man(max_active_simulations)
-thread = start_server(exp_man, port)
+thread = start_server(exp_man, stop_event, port)

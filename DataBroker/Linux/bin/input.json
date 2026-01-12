@@ -3,8 +3,7 @@
         {
             "executableName": "ans_simdiag_15jul21",
             "hold_for_dante": "false",
-            "co_sim_enable": "true",
-            "realtime_timestep":  "false"
+            "co_sim_enable": "true"
         }
     ],
     "cosim": [

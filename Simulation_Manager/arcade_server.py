@@ -1,25 +1,26 @@
+import select
 import socket
 import threading
 import uuid
-import experiment_manager
+from Simulation_Manager import experiment_manager
 import sys
 
 class arcade_server:
 
     num_recieved = 0
 
-    def __init__(self, em:experiment_manager, port=12345) -> None:
+    def __init__(self, em:experiment_manager, stop_event, port=12345) -> None:
         self.em = em
         self.HEADER = 64
         self.PORT = port
-        # SERVER = ""
+        self.stop_event = stop_event
+
         self.SERVER = socket.gethostbyname(socket.gethostname())
         self.ADDR = (self.SERVER, self.PORT)
         self.FORMAT = 'UTF-8'
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
-        
 
-    def handle_client(self,conn, addr):
+    def handle_client(self, conn, addr):
         input = []
         connected = True
         new_sim = False
@@ -32,7 +33,7 @@ class arcade_server:
                     connected = False
                 else:
                     input.append(msg)
-                if "new_sim: True" in msg:
+                if "new_sim: True" or "new_sim: true" in msg:
                     new_sim = True
             #conn.send("Msg received".encode(self.FORMAT))
         self.num_recieved += 1
@@ -48,12 +49,20 @@ class arcade_server:
         conn.close()
 
     def start(self):
-        print(f"Listening on {self.SERVER}:{self.PORT}")
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
         self.server.listen()
         print(f"[LISTENING]")
-        while True:
-            conn, addr = self.server.accept()
-            thread = threading.Thread(target=self.handle_client, args=(conn, addr),daemon=True)
-            thread.start()
+        try:
+          inputs = [self.server]  # List of sockets to monitor for incoming connections
+          while not self.stop_event.is_set():
+            # Use select to wait for the server socket to be ready for reading
+            readable, _, _ = select.select(inputs, [], [], 0.5)  # 0.5 sec timeout
+
+            for s in readable:
+              if s is self.server:
+                conn, addr = self.server.accept()
+                thread = threading.Thread(target=self.handle_client, args=(conn, addr), daemon=True)
+                thread.start()
+        except Exception as e:
+          print(f'An expected error occurred in arcade_server.start {e}')

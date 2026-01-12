@@ -1,0 +1,12 @@
+{
+    "Attacks": [
+        {
+            "Name" : "Attack_1",
+            "Type" : "PNN",
+            "Time" : "605",
+            "Set_All_Values" : "False",
+            "Value1" : "13",
+            "Value2" : "17"
+        }
+    ]
+}

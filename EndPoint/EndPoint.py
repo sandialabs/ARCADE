@@ -9,9 +9,6 @@ import zmq
 import json
 from opcua import ua, Server, Client
 from pymodbus.client import ModbusTcpClient as ModbusClient
-from pymodbus.payload import BinaryPayloadBuilder, BinaryPayloadDecoder
-from pymodbus.constants import Endian
-
 
 class Data_Repo(object):
     def __init__(self,Tags):
@@ -146,13 +143,13 @@ class MB_PLC:
         else:
             self.port = 502
 
-        # memory format
+        # memory format: now expects strings like "FLOAT32", "INT64", etc.
         if 'MemFormat' in config:
             self.Mem_default = config['MemFormat']
         else:
-            self.Mem_default = '32_float'
+            self.Mem_default = 'FLOAT32'
         
-        #set endianness
+        #set endianness (now only used as word_order for conversions)
         if 'Endianess' in config:
             # parse endianness
             Endian_Key = config['Endianess'].split(",")
@@ -178,6 +175,32 @@ class MB_PLC:
         self.client = ModbusClient(self.ip, port=self.port)
         self.mlock = threading.Lock()
 
+    def _normalize_format(self, formating: str) -> str:
+        return str(formating).strip().upper()
+
+    # internal: map "FLOAT32", "INT64", etc. directly to DATATYPE
+    def _get_datatype(self, formating: str):
+        fmt = self._normalize_format(formating)
+        try:
+            return getattr(self.client.DATATYPE, fmt)
+        except AttributeError:
+            raise ValueError(f"Unsupported MemFormat '{fmt}' for pymodbus 3.x")
+
+    # internal: how many 16-bit registers are needed for a given format
+    def _get_register_count(self, formating: str) -> int:
+        fmt = self._normalize_format(formating)
+        if fmt in ('INT16', 'UINT16'):
+            return 1
+        elif fmt in ('INT32', 'UINT32', 'FLOAT32'):
+            return 2
+        elif fmt in ('INT64', 'UINT64', 'FLOAT64'):
+            return 4
+        else:
+            raise ValueError(f"Unknown register width for MemFormat '{fmt}'")
+
+    def _word_order_str(self) -> str:
+        return 'little' if self.wordOrder == Endian.LITTLE else 'big'
+
     #Define how to connect with PLC
     def connect(self):
         client = self.client
@@ -185,141 +208,100 @@ class MB_PLC:
 
     #Define how to read values from PLCs
     def read(self, mem_addr, formating=None):
-        #define decode options
-        def float_64(decode):
-            return decode.decode_64bit_float()
-        def float_32(decode):
-            return decode.decode_32bit_float()
-        def float_16(decode):
-            return decode.decode_16bit_float()
-        def int_64(decode):
-            return decode.decode_64bit_int()
-        def int_32(decode):
-            return decode.decode_32bit_int()
-        def int_16(decode):
-            return decode.decode_16bit_int()
-        def uint_64(decode):
-            return decode.decode_64bit_uint()
-        def uint_32(decode):
-            return decode.decode_32bit_uint()
-        def uint_16(decode):
-            return decode.decode_16bit_uint()
-
-        #Check formatting and split off bit count
         if formating is None:
             formating = self.Mem_default
-        Format = formating.split('_')
-
-        if int(Format[0]) >= 16:  #determine number of registers to read
-            count = int(int(Format[0])/16)
-        else:
-            count = 1
-
-        client = self.client #define client
 
         try:
-            results = client.read_holding_registers(int(mem_addr),count,unit=1) #read client PLC
-        except:
+            count = self._get_register_count(formating)
+        except ValueError as e:
+            logging.error(str(e))
+            return None
+
+        client = self.client
+
+        try:
+            # pymodbus 3.11+: keyword-only after "*"
+            results = client.read_holding_registers(
+                address=int(mem_addr),
+                count=count,
+                device_id=1,
+            )
+        except Exception:
             results = None
 
-        #decoder dictionary
-        Decode_dict = { '16_float':float_16, '32_float':float_32, '64_float':float_64, '16_int':int_16, '32_int':int_32, '64_int':int_64, '16_uint':uint_16, '32_uint':uint_32, '64_uint':uint_64 }
+        if results is None or results.isError():
+            return None
 
-        if results is not None:
-            #Set up decoder
-            try:
-                decoder = BinaryPayloadDecoder.fromRegisters(results.registers, byteorder=self.byteOrder, wordorder=self.wordOrder)
-            
-                return Decode_dict[formating](decoder)
-                #return decoded value
-            except:
-                return None
-        else:
-            #return a Nonetype
+        try:
+            datatype = self._get_datatype(formating)
+            value = client.convert_from_registers(
+                registers=results.registers,
+                data_type=datatype,
+                word_order=self._word_order_str(),
+            )
+            return value
+        except Exception as exc:
+            logging.error("Failed to convert registers for %s: %s", formating, exc)
             return None
 
     #define how to read coils from PLC
     def readcoil(self, mem_addr):
         client = self.client
         self.mlock.acquire()
-        result = client.read_coils(int(mem_addr),1)
-        self.mlock.release()
+        try:
+            # pymodbus 3.11+: keyword-only after "*"
+            result = client.read_coils(address=int(mem_addr), count=1)
+        finally:
+            self.mlock.release()
         return result.bits[0]
 
     #Define how to write to coils
     def writecoil(self, mem_addr, value):
         client = self.client
         self.mlock.acquire()
-        client.write_coil(int(mem_addr), value)
-        self.mlock.release()
+        try:
+            client.write_coil(int(mem_addr), value)
+        finally:
+            self.mlock.release()
 
     #define how to write to registers
     def write(self, mem_addr, value, formating=None):
-        #define encode options
-        def float_64(build, value):
-            build.add_64bit_float(float(value))
-        def float_32(build, value):
-            build.add_32bit_float(float(value))
-        def float_16(build, value):
-            build.add_16bit_float(float(value))
-        def int_16(build, value):
-            build.add_16bit_int(value)
-        def int_32(build, value):
-            build.add_32bit_int(value)
-        def int_64(build, value):
-            build.add_64bit_int(value)
-        def uint_16(build, value):
-            build.add_16bit_uint(value)
-        def uint_32(build, value):
-            build.add_32bit_uint(value)
-        def uint_64(build, value):
-            build.add_64bit_uint(value)
-
-        #Catch default format conditions and split bits value to determine register write count
         if formating is None:
             formating = self.Mem_default
-        Format = formating.split('_')
 
-        #Catch incorrect formating of ints
-        if Format[1] == 'int' or Format[1] == 'uint':
-            if type(value) is not int:
+        fmt = self._normalize_format(formating)
+
+        # ints/uints must be integers
+        if fmt.startswith('INT') or fmt.startswith('UINT'):
+            if not isinstance(value, int):
                 value = int(value)
 
+        client = self.client
 
-        if int(Format[0]) >= 16:  #determine number of registers to write
-            count = int(Format[0])/16
-        else:
-            count = 1
+        try:
+            datatype = self._get_datatype(fmt)
+            payload = client.convert_to_registers(
+                value=value,
+                data_type=datatype,
+                word_order=self._word_order_str(),
+            )
+        except Exception as exc:
+            print(f"Error encoding value for write ({fmt}): {exc}")
+            return
 
-        client = self.client #define client
-
-        #start builder for writng to registers
-        builder = BinaryPayloadBuilder(byteorder=self.byteOrder, wordorder=self.wordOrder)
-
-        #encoder dictionary
-        Encode_dict = { '16_float':float_16, '32_float':float_32, '64_float':float_64, '16_int':int_16, '32_int':int_32, '64_int':int_64, '16_uint':uint_16, '32_uint':uint_32, '64_uint':uint_64 }
-
-        #Encode value with builder
-        Encode_dict[formating](builder, value)
-
-        payload = builder.to_registers()
-        
-        #read/write operations
-        
         #error check the write operation
         try:
             Check_write = client.write_registers(int(mem_addr), payload)
-        except:
+        except Exception:
             Check_write = None
             print('First write failed - IP:%s\n' % self.ip)
-            pass
         
         if Check_write is not None:
             while Check_write.isError():
                 try:
                     Check_write = client.write_registers(int(mem_addr), payload)
-                except:
-                    pass
+                except Exception:
+                    break
         else:
             print("Client Not Connected!")
 
@@ -491,12 +473,10 @@ class Connector:
                     exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.SensorMem) - len(self."+c+")))")
                 elif eval("len(self."+c+") <= 0"):
                     setattr(self, c, [config_list_defaults[c] for i in range(len(self.SensorMem))])
-                    #exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.SensorMem))]")
             elif c[:8] == 'Actuator' and self.actuator and c != "ActuatorTags" and c != "ActuatorMem":
                 if eval("len(self."+c+") != len(self.ActuatorMem) and len(self."+c+") > 0"):
                     exec("self."+c+".append(self."+c+"(-1) for i in range(len(self.ActuatorMem) - len(self."+c+")))")    
                 elif eval("len(self."+c+") <= 0"):
-                    #exec("self."+c+" = [config_list_defaults["+c+"] for i in range(len(self.ActuatorMem))]")
                     setattr(self, c, [config_list_defaults[c] for i in range(len(self.ActuatorMem))])
             #make sure that all the floats are actually converted to floats
             if c[-6:] == 'Offset' or c[-6:] == 'caling':
@@ -581,7 +561,7 @@ class Connector:
                             time1 = 0
                             while float(time1) < float(self.Scan_Time) and not self.Event.is_set():
                                 time1 = time.time() - time_end
-                    #!!!!!!!!!!!!!!!CHANGE ME!!!!!!!!!!!!!!
+                    #!!!!!!!!!!!!!!!CHANGE ME!!!!!!!!!!!!!! 
                     if self.actuator:
                         #gather and report data from PLC
                         for i in range(int(len(self.ActuatorTags))):
@@ -797,7 +777,6 @@ def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
         msg = str(msgFromServer,'UTF-8')
         msg_split = msg.split()
 
-        #print(msg_split)
         #See if a stop was requested
         if msg_split[0] == "STOP":
             Event.set()
@@ -808,7 +787,6 @@ def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
         for i in range(nTags):
             try:
                 IDX = msg_split.index(Tags[i])
-                #print(msg_split)
                 Values[i] = float(msg_split[IDX+1])
                 Time_Stamp = float(msg_split[IDX+2])
             except:
@@ -846,7 +824,7 @@ if __name__ == "__main__":
     Sensor_Data.write("Time",0.0)
     print(Sensor_Data.Tag_NoDuplicates)
 
-    # GEt # of PLCs if they exist
+    # Get # of PLCs if they exist
     if 'plc' in sys_config.type_idx:
         nPLC = sys_config.type_idx['plc']
     else:

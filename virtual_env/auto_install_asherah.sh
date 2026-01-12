@@ -4,7 +4,7 @@
 
 ### SCADA ###
 #Pull the image down from dockerhub
-sudo docker pull ubuntu:20.04
+sudo docker pull ubuntu:24.04
 #Then need to add the desired packages and files
 
 #Stop and delete old container
@@ -12,7 +12,7 @@ sudo docker container stop asherah_dev
 sudo docker container rm asherah_dev
 
 #Start Docker Image as Container in background
-sudo docker run -it -d --name asherah_dev -v `pwd`:/os:rw --cap-add SYS_ADMIN --device /dev/loop0 ubuntu:20.04
+sudo docker run -it -d --name asherah_dev -v `pwd`:/os:rw --cap-add SYS_ADMIN --device /dev/loop0 ubuntu:24.04
 
 #add /etc/fstab file
 sudo docker exec -it asherah_dev sh -c "cat > /etc/fstab <<EOF
@@ -146,7 +146,7 @@ DEFAULT linux
   SAY Now booting the kernel from SYSLINUX...
  LABEL linux
   KERNEL /boot/vmlinuz
-  APPEND ro root=/dev/sda1 initrd=/boot/initrd.img
+  APPEND ro root=/dev/vda1 initrd=/boot/initrd.img
 EOF
 sudo cp syslinux.txt /mnt/boot/syslinux.cfg
 

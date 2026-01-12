@@ -15,9 +15,15 @@
 
 void* Data_Aggregator(void* arg);
 void enqueue(Queue* q, DATA value);
-DATA dequeue(Queue* q);
 int isEmpty(Queue* q);
 void clearQueue(Queue* q);
 Queue* createQueue();
+
+typedef struct {
+    DATA data;
+    struct timespec realTime;
+} Timestamped_Data;
+
+Timestamped_Data dequeue(Queue* q);
 
 #endif // DATA_AGG_H

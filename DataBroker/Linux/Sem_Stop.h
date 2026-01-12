@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 
-sem_t* stop;
+extern sem_t* stop;
 
 int Sem_Stop(void);
 void Set_Stop(void);

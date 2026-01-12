@@ -5,6 +5,7 @@ FORMAT = 'UTF-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 
 class Client:
+
     def __init__(self, server, port):
         self.server = server
         self.port = port
@@ -40,6 +41,7 @@ def send_file_to_server(file_name, server=None, port=None):
         client.send(line)
     
     client.disconnect()
+    
     return client.uid
 
 if __name__ == "__main__":

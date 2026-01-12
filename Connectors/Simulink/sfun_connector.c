@@ -1,5 +1,5 @@
 /* 
-Copyright 2024 National Technology & Engineering Solutions of Sandia, LLC (NTESS). 
+Copyright 2021 National Technology & Engineering Solutions of Sandia, LLC (NTESS). 
 Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains 
 certain rights in this software.
 
@@ -71,6 +71,10 @@ int Sem_Stop(void)
     sem_t *stop;
     int ST;
 	stop = sem_open("/stop", O_CREAT, 0644, 0);
+    if (stop == SEM_FAILED) {
+        ssPrintf("Failed to open stop semaphore.");
+        return 1;
+        }
 	sem_getvalue(stop, &ST);
 	int value = (int)ST;
 	return value;
@@ -162,6 +166,11 @@ static void mdlInitializeSizes(SimStruct *S)
       char_T *IN_TAGS;
       char_T *OUT_TAGS;
       
+      if (!mxIsChar(UP_TAGS(S)) || !mxIsChar(PUB_TAGS(S))) {
+        ssSetErrorStatus(S, "Invalid parameter type for UP_TAGS or PUB_TAGS.");
+        return;
+        }
+
       nu_I = mxGetNumberOfElements(UP_TAGS(S));
       nu_O = mxGetNumberOfElements(PUB_TAGS(S));
       
@@ -179,13 +188,13 @@ static void mdlInitializeSizes(SimStruct *S)
         }
       /* pull strings from parameters */
       if ( mxGetString(UP_TAGS(S),IN_TAGS,nu_I+1) != 0 ) {
-            free(IN_TAGS);
+            //free(IN_TAGS);
             ssSetErrorStatus(S,"mxGetString error in mdlStart");
             return;
         }
       
       if ( mxGetString(PUB_TAGS(S),OUT_TAGS,nu_O+1) != 0 ) {
-            free(OUT_TAGS);
+            //free(OUT_TAGS);
             ssSetErrorStatus(S,"mxGetString error in mdlStart");
             return;
         }
@@ -199,7 +208,7 @@ static void mdlInitializeSizes(SimStruct *S)
       }
       
       
-      free(token);
+      //free(token);
       token = strtok(OUT_TAGS,";");
       n_Out = 0;
       while (token != NULL) {
@@ -214,8 +223,8 @@ static void mdlInitializeSizes(SimStruct *S)
       ssPrintf("Output: %u Input: %u \n",n_In,n_Out);
       
       
-      free(OUT_TAGS);
-      free(IN_TAGS);
+      //free(OUT_TAGS);
+      //free(IN_TAGS);
       
       
   }
@@ -253,10 +262,26 @@ static void mdlInitializeSampleTimes(SimStruct *S)
 
       /* set up shared memory */
       int shmidu = shmget(keyu, Owidth * sizeof(DATA), 0600|IPC_CREAT);
-      int shmidp = shmget(keyp, Iwidth * sizeof(DATA), 0600|IPC_CREAT);
-
-      DATA *publishPointsShmAddress = (DATA *) shmat(shmidp,NULL,0); 
+      if (shmidu == -1) {
+        ssSetErrorStatus(S, "Failed to create shared memory for update points.");
+        return;
+        }
       DATA *updatePointsShmAddress = (DATA *) shmat(shmidu,NULL,0); 
+      if (updatePointsShmAddress == (void *)-1) {
+        ssSetErrorStatus(S, "Failed to attach shared memory for update points.");
+        return;
+        }
+      
+      int shmidp = shmget(keyp, Iwidth * sizeof(DATA), 0600|IPC_CREAT);
+      if (shmidp == -1) {
+        ssSetErrorStatus(S, "Failed to create shared memory for publish points.");
+        return;
+        }
+      DATA *publishPointsShmAddress = (DATA *) shmat(shmidp,NULL,0); 
+      if (publishPointsShmAddress == (void *)-1) {
+        ssSetErrorStatus(S, "Failed to attach shared memory for publish points.");
+        return;
+        }
       
       /* Collect TAGS */
       
@@ -283,13 +308,13 @@ static void mdlInitializeSampleTimes(SimStruct *S)
         }
       /* pull strings from parameters */
       if ( mxGetString(UP_TAGS(S),IN_TAGS,nu_I+1) != 0 ) {
-            free(IN_TAGS);
+            //free(IN_TAGS);
             ssSetErrorStatus(S,"mxGetString error in mdlStart");
             return;
         }
       
       if ( mxGetString(PUB_TAGS(S),OUT_TAGS,nu_O+1) != 0 ) {
-            free(OUT_TAGS);
+            //free(OUT_TAGS);
             ssSetErrorStatus(S,"mxGetString error in mdlStart");
             return;
         }
@@ -312,7 +337,7 @@ static void mdlInitializeSampleTimes(SimStruct *S)
           
       }
       
-      free(token);
+      //free(token);
       token = strtok_r(OUT_TAGS,";",&savetok);
       i_o = 0;
       
@@ -329,8 +354,8 @@ static void mdlInitializeSampleTimes(SimStruct *S)
       shmdt(publishPointsShmAddress);
       shmdt(updatePointsShmAddress);
       
-      free(OUT_TAGS);
-      free(IN_TAGS);
+      //free(OUT_TAGS);
+      //free(IN_TAGS);
 
       real_T *rwork = ssGetRWork(S);
       real_T *y     = ssGetOutputPortRealSignal(S,0);
@@ -346,11 +371,22 @@ static void mdlInitializeSampleTimes(SimStruct *S)
       /* Send number of inputs and outputs to data broker */
       sem_t *msg_sem;
       msg_sem = sem_open("/msg", O_CREAT, 0644, 0);
-      
-      int shmdb = shmget(msg_key, sizeof(MSG_DATA), 0600|IPC_CREAT);
+      if (msg_sem == SEM_FAILED) {
+        ssSetErrorStatus(S, "Failed to open semaphore for init messaging.");
+        return;
+        }
 
+      int shmdb = shmget(msg_key, sizeof(MSG_DATA), 0600|IPC_CREAT);
+      if (shmdb == -1) {
+        ssSetErrorStatus(S, "Failed to create shared memory for init messaging.");
+        return;
+        }
       MSG_DATA *MSG_DB = (MSG_DATA *) shmat(shmdb,NULL,0); 
-      
+      if (MSG_DB == (void *)-1) {
+        ssSetErrorStatus(S, "Failed to attach shared memory for init messaging.");
+        return;
+      }
+
       MSG_DB->UP = Owidth;
       MSG_DB->PUB = Iwidth;
       MSG_DB->TimeStep = ssGetFixedStepSize(S);
@@ -412,16 +448,39 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     sem_t *semu;
     sem_t *semp;
     
-    semu = sem_open(UPDATE_POINTS_SHM_SEM, 0);
-    semp = sem_open(PUBLISH_POINTS_SHM_SEM, 0);
-    
+    semu = sem_open(UPDATE_POINTS_SHM_SEM, O_CREAT, 0644, 0);
+    if (semu == SEM_FAILED) {
+        ssSetErrorStatus(S, "Failed to open semaphore for update points.");
+        return;
+        }
+    semp = sem_open(PUBLISH_POINTS_SHM_SEM, O_CREAT, 0644, 0);
+    if (semp == SEM_FAILED) {
+        ssSetErrorStatus(S, "Failed to open semaphore for publish points.");
+        return;
+        }
     
     /* set up shared memory */
     int shmidu = shmget(keyu, Owidth * sizeof(DATA), 0600|IPC_CREAT);
-    int shmidp = shmget(keyp, Iwidth * sizeof(DATA), 0600|IPC_CREAT);
-    
-    DATA *publishPointsShmAddress = (DATA *) shmat(shmidp,NULL,0); 
+    if (shmidu == -1) {
+    ssSetErrorStatus(S, "Failed to create shared memory for update points.");
+    return;
+    }
     DATA *updatePointsShmAddress = (DATA *) shmat(shmidu,NULL,0); 
+    if (updatePointsShmAddress == (void *)-1) {
+    ssSetErrorStatus(S, "Failed to attach shared memory for update points.");
+    return;
+    }
+    
+    int shmidp = shmget(keyp, Iwidth * sizeof(DATA), 0600|IPC_CREAT);
+    if (shmidp == -1) {
+    ssSetErrorStatus(S, "Failed to create shared memory for publish points.");
+    return;
+    }
+    DATA *publishPointsShmAddress = (DATA *) shmat(shmidp,NULL,0); 
+    if (publishPointsShmAddress == (void *)-1) {
+    ssSetErrorStatus(S, "Failed to attach shared memory for publish points.");
+    return;
+    }
 
     UNUSED_ARG(tid); /* not used in single tasking mode */
     
@@ -460,6 +519,30 @@ static void mdlOutputs(SimStruct *S, int_T tid)
  */
 static void mdlTerminate(SimStruct *S)
 {
+    
+    // Remove shared memory for update points
+    int shmidu = shmget(keyu, 0, 0600);  // Get the shared memory ID
+    if (shmidu != -1) {
+        if (shmctl(shmidu, IPC_RMID, NULL) == -1) { // Mark the segment for deletion
+            ssPrintf("Failed to remove shared memory for update points.\n");
+        }
+    }
+
+    // Remove shared memory for publish points
+    int shmidp = shmget(keyp, 0, 0600);  // Get the shared memory ID
+    if (shmidp != -1) {
+        if (shmctl(shmidp, IPC_RMID, NULL) == -1) { // Mark the segment for deletion
+            ssPrintf("Failed to remove shared memory for publish points.\n");
+        }
+    }
+
+    // Remove shared memory for message data
+    int shmdb = shmget(msg_key, 0, 0600);  // Get the shared memory ID
+    if (shmdb != -1) {
+        if (shmctl(shmdb, IPC_RMID, NULL) == -1) { // Mark the segment for deletion
+            ssPrintf("Failed to remove shared memory for init messaging.\n");
+        }
+    }
     
     sem_t *stop;
     stop = sem_open(STOP_SEM, 0);

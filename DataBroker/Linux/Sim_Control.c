@@ -2,6 +2,7 @@
 #include "Shm_Interface.h"
 #include "Sem_Stop.h"
 #include "init_Server.h"
+#include "utils.h"
 
 void User_Control(void){
     
@@ -39,8 +40,6 @@ void *Sim_Control(){
     // Setup special flags
     Special_Flags SHM_FLAGS;
     pthread_mutex_lock(&FLAG_Mutx);
-    FLAGS.Hold_Time_Flag = Read_flags();
-    FLAGS.Reset_Sim_Flag = false;
     SHM_FLAGS = FLAGS;
     pthread_mutex_unlock(&FLAG_Mutx);
     

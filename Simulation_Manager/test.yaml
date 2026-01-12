@@ -1,0 +1,14 @@
+new_sim: True
+exp_name: exp1
+minimega_filepath: /opt/minimega/ARCADE_script.mm
+wallclock_timeout: 900
+
+attack:
+  attack_simulator_name: SIM
+  input_files:
+    file_1: 
+        path: /path/to/ARCADE/Simulation_Manager/files/staging.ps1
+        execute: False
+        vm: flownex
+staging_script: /path/to/ARCADE/Simulation_Manager/files/staging.mm
+collection_script: /path/to/ARCADE/Simulation_Manager/files/collect_data.mm

@@ -1,4 +1,5 @@
 #include "Sem_Stop.h"
+sem_t* stop;
 
 //utility to check the simulations stop flag semaphore
 int Sem_Stop(void)

@@ -1,15 +1,20 @@
 #include "UDP_Server.h"
 #include "Shm_Interface.h"
 #include "Sem_Stop.h"
+#include "utils.h"
 
 DATA UP_DATA[MAX_IO];
 DATA PUB_DATA[MAX_IO];
 
-Special_Flags FLAGS;
+MSG_DATA DB_MESSAGE;
+
+pthread_mutex_t DATA_Mutx;
 
 void* Shm_Interface(void* arg)
 {
     printf("Starting Shm_Interface\n");
+
+    
 
     // Setup keys for shm
     key_t msg_key = 10620; // shared memory DB key
@@ -44,19 +49,29 @@ void* Shm_Interface(void* arg)
         UDP_Stop();
         return (void*)-1;
     }
+    
+    sem_t* co_sim = sem_open("/co_sim", O_CREAT, 0644, 0);
+    if (co_sim == SEM_FAILED) {
+        perror("Failed to open co-sim semaphore");
+        Set_Stop();
+        UDP_Stop();
+        return (void*)-1;
+    }
+
+    sem_t* co_sim_2 = sem_open("/co_sim_2", O_CREAT, 0644, 0);
+    if (co_sim_2 == SEM_FAILED) {
+        perror("Failed to open co-sim 2 semaphore");
+        Set_Stop();
+        UDP_Stop();
+        return (void*)-1;
+    }
+
     printf("waiting for DA *********************\n");
     int wait_mod = 0;
     // Semaphore closed by Data_Aggregator upon completion of data exchange
 
-    // Setup special flags
-    Special_Flags SHM_FLAGS;
-    pthread_mutex_lock(&FLAG_Mutx);
-    SHM_FLAGS = FLAGS;
-    pthread_mutex_unlock(&FLAG_Mutx);
-
     //special flag timer
     struct timespec remaining, request = { 0, 1000000 };
-
 
     // Attempt to open the semaphore until it exists
     while (1) {
@@ -143,6 +158,27 @@ void* Shm_Interface(void* arg)
 
     // Signal that read is done
     sem_post(msg_sem);
+
+    // Setup special flags
+    Special_Flags SHM_FLAGS;
+    Configs CONF_FLAGS;
+    pthread_mutex_lock(&FLAG_Mutx);
+    SHM_FLAGS = FLAGS;
+    CONF.PUB_N = N_PUB;
+    CONF.UP_N = N_UP;
+    CONF.TimeStep = DT;
+    CONF.config_captured = true;
+
+    CONF_FLAGS = CONF;
+    pthread_mutex_unlock(&FLAG_Mutx);
+    
+    // Determine if co-sim is blocking for sync
+
+    bool co_sim_blocking = false;
+    if (CONF_FLAGS.Co_Sim_Enable && CONF_FLAGS.Co_Sim_Sync_Enable){
+        co_sim_blocking = true;
+    }
+
 
     // Wait for Data_Aggregator to setup shared memory for Shm_Interface
     while (1) {
@@ -238,14 +274,22 @@ void* Shm_Interface(void* arg)
             enqueue(UP_DATA_QUEUE, UP_DB[n]);
         }
 
-        pthread_mutex_unlock(&DATA_Mutx);
-
         for (n = 0; n < N_PUB; n++) {
             printf("%s %s %f %f sec \n", PUB_DATA[n].Name, PUB_DATA[n].Type, PUB_DATA[n].Value, PUB_DATA[n].Time);
         }
         for (n = 0; n < N_UP; n++) {
             printf("%s %s %f %f sec \n", UP_DATA[n].Name, UP_DATA[n].Type, UP_DATA[n].Value, UP_DATA[n].Time);
         }
+        
+        pthread_mutex_unlock(&DATA_Mutx);
+    }
+
+    // initalize the cosim system if its enabled
+    if (co_sim_blocking){
+        // signal to co-sim thread
+        sem_post(co_sim);
+
+        sem_wait_safe(co_sim_2, 0);
     }
 
     // Begin the data exchange loop
@@ -306,13 +350,23 @@ void* Shm_Interface(void* arg)
             enqueue(PUB_DATA_QUEUE, PUB_DB[n]);
             printf("%s %s %f %f sec \n", PUB_DATA[n].Name, PUB_DATA[n].Type, PUB_DATA[n].Value, PUB_DATA[n].Time);
         }
+        
+        // co-simulation waiting system
+        if (co_sim_blocking){
+        
+            // Release Mutex
+            pthread_mutex_unlock(&DATA_Mutx);
 
-        /* TESTING PURPOSES */
-        for (n = 0; n < N_UP; n++) {
-            UP_DATA[n].Time = PUB_DATA[0].Time;
+            // signal to co-sim thread
+            sem_post(co_sim);
+
+            sem_wait_safe(co_sim_2, 0);
+            
+            // Capture mutex
+            pthread_mutex_lock(&DATA_Mutx);
         }
-        /* /TESTING PURPOSES */
 
+        // push updates to simulator
         for (n = 0; n < N_UP; n++) {
             UP_DB[n] = UP_DATA[n];
             enqueue(UP_DATA_QUEUE, UP_DB[n]);
@@ -359,9 +413,8 @@ void* Shm_Interface(void* arg)
         sem_post(up);
     }
 
+    Set_Stop();
     UDP_Stop();
-    memset(msg, 0, sizeof(msg));
-    sprintf(msg, "STOP\nSTOP\n");
 
     shmdt(PUB_DB);
     shmdt(UP_DB);
@@ -369,7 +422,6 @@ void* Shm_Interface(void* arg)
     shmctl(shmidup, IPC_RMID, NULL);
     clearQueue(UP_DATA_QUEUE);
     clearQueue(PUB_DATA_QUEUE);
-    Set_Stop();
-
+    
     return 0;
 }

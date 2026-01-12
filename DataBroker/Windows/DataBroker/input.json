@@ -18,7 +18,7 @@
           "ActuatorMem": "2050,2056,2062",
           "ScanTime": "0.1",
           "TimeMem": "2074",
-          "MemFormat": "32_float",
+          "MemFormat": "FLOAT32",
           "Endianess": "big,big",
           "Port": "1502"
         }
@@ -33,7 +33,7 @@
           "ActuatorMem": "2058",
           "ScanTime": "0.1",
           "TimeMem": "2048",
-          "MemFormat": "32_float"
+          "MemFormat": "FLOAT32"
         }
       ]
 

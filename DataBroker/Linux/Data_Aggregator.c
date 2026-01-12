@@ -2,6 +2,7 @@
 #include "Shm_Interface.h"
 #include "Sem_Stop.h"
 #include "atomicSet.h"
+#include "utils.h"
 
 int STOP = 0;
 DATA UP_DATA_OUT[MAX_IO];
@@ -28,8 +29,8 @@ void* Data_Aggregator(void* arg) {
         return (void*)-1;
     }
 
-    init_Values = (MSG_DATA*) shmat(pass_shmid, NULL, 0);
-    if (init_Values == (void*) -1) {
+    init_Values = (MSG_DATA*)shmat(pass_shmid, NULL, 0);
+    if (init_Values == (void*)-1) {
         perror("shmat");
         Set_Stop();
         setErrorFlag();
@@ -90,25 +91,41 @@ void* Data_Aggregator(void* arg) {
         return (void*)-1;
     }
 
-    fprintf(up_file, "Name,Value,Time\n");
-    fprintf(pub_file, "Name,Value,Time\n");
+    if (CONF.Realtime_Timestep) {
+        fprintf(up_file, "Name,Value,Time,RealTime\n");
+        fprintf(pub_file, "Name,Value,Time,RealTime\n");
+    }
+    else {
+        fprintf(up_file, "Name,Value,Time\n");
+        fprintf(pub_file, "Name,Value,Time\n");
+    }
 
     while (1) {
         if (!isEmpty(PUB_DATA_QUEUE)) {
-            DATA new_log = dequeue(PUB_DATA_QUEUE);
-            fprintf(pub_file, "%s,%f,%f\n", new_log.Name, new_log.Value, new_log.Time);
+            Timestamped_Data new_log = dequeue(PUB_DATA_QUEUE);
+            if (CONF.Realtime_Timestep) {
+                fprintf(pub_file, "%s,%f,%f,%ld\n", new_log.data.Name, new_log.data.Value, new_log.data.Time, new_log.realTime.tv_sec);
+            }
+            else {
+                fprintf(pub_file, "%s,%f,%f\n", new_log.data.Name, new_log.data.Value, new_log.data.Time);
+            }
         }
 
         if (!isEmpty(UP_DATA_QUEUE)) {
-            DATA new_log = dequeue(UP_DATA_QUEUE);
-            fprintf(up_file, "%s,%f,%f\n", new_log.Name, new_log.Value, new_log.Time);
+            Timestamped_Data new_log = dequeue(UP_DATA_QUEUE);
+            if (CONF.Realtime_Timestep) {
+                fprintf(up_file, "%s,%f,%f,%ld\n", new_log.data.Name, new_log.data.Value, new_log.data.Time, new_log.realTime.tv_sec);
+            }
+            else {
+                fprintf(up_file, "%s,%f,%f\n", new_log.data.Name, new_log.data.Value, new_log.data.Time);
+            }
         }
 
         if (checkErrorFlag()) {
             printf("Error Flag set to True checked");
             Set_Stop();
         }
-        STOP = Sem_Stop(); 
+        STOP = Sem_Stop();
         if (STOP > 0) {
             break;
         }
@@ -116,13 +133,23 @@ void* Data_Aggregator(void* arg) {
 
     while (!isEmpty(PUB_DATA_QUEUE) || !isEmpty(UP_DATA_QUEUE)) {
         if (!isEmpty(PUB_DATA_QUEUE)) {
-            DATA new_log = dequeue(PUB_DATA_QUEUE);
-            fprintf(pub_file, "%s,%f,%f\n", new_log.Name, new_log.Value, new_log.Time);
+            Timestamped_Data new_log = dequeue(PUB_DATA_QUEUE);
+            if (CONF.Realtime_Timestep) {
+                fprintf(pub_file, "%s,%f,%f,%ld\n", new_log.data.Name, new_log.data.Value, new_log.data.Time, new_log.realTime.tv_sec);
+            }
+            else {
+                fprintf(pub_file, "%s,%f,%f\n", new_log.data.Name, new_log.data.Value, new_log.data.Time);
+            }
         }
 
         if (!isEmpty(UP_DATA_QUEUE)) {
-            DATA new_log = dequeue(UP_DATA_QUEUE);
-            fprintf(up_file, "%s,%f,%f\n", new_log.Name, new_log.Value, new_log.Time);
+            Timestamped_Data new_log = dequeue(UP_DATA_QUEUE);
+            if (CONF.Realtime_Timestep) {
+                fprintf(up_file, "%s,%f,%f,%ld\n", new_log.data.Name, new_log.data.Value, new_log.data.Time, new_log.realTime.tv_sec);
+            }
+            else {
+                fprintf(up_file, "%s,%f,%f\n", new_log.data.Name, new_log.data.Value, new_log.data.Time);
+            }
         }
     }
 
@@ -150,6 +177,10 @@ void enqueue(Queue* q, DATA value) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
+
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    newNode->realTime = ts;
     newNode->data = value;
     newNode->next = NULL;
 
@@ -157,7 +188,8 @@ void enqueue(Queue* q, DATA value) {
 
     if (q->rear == NULL) {
         q->front = q->rear = newNode;
-    } else {
+    }
+    else {
         q->rear->next = newNode;
         q->rear = newNode;
     }
@@ -165,17 +197,25 @@ void enqueue(Queue* q, DATA value) {
     pthread_mutex_unlock(&q->lock);
 }
 
-DATA dequeue(Queue* q) {
+Timestamped_Data dequeue(Queue* q) {
     pthread_mutex_lock(&q->lock);
+
+    Timestamped_Data TSData;
+
     if (q->front == NULL) {
         fprintf(stderr, "Queue is empty\n");
         pthread_mutex_unlock(&q->lock);
-        DATA empty_data = {"", 0.0, 0.0};
-        return empty_data;
+        struct timespec ts;
+        clock_gettime(CLOCK_REALTIME, &ts);
+        TSData.realTime = ts;
+        DATA empty_data = { "", 0.0, 0.0 };
+        TSData.data = empty_data;
+        return TSData;
     }
 
     Node* temp = q->front;
-    DATA data = temp->data;
+    TSData.realTime = temp->realTime;
+    TSData.data = temp->data;
     q->front = q->front->next;
 
     if (q->front == NULL)
@@ -183,7 +223,7 @@ DATA dequeue(Queue* q) {
 
     free(temp);
     pthread_mutex_unlock(&q->lock);
-    return data;
+    return TSData;
 }
 
 int isEmpty(Queue* q) {

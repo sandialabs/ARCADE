@@ -3,7 +3,7 @@
 #include "utils.h"
 
 
-void *init_Server(void *arg)
+void *init_Server()
 {
     //Simulator variables
     int STOP = 0;
@@ -39,6 +39,22 @@ void *init_Server(void *arg)
             fprintf(stderr, "Error before: %s\n", error_ptr);
         }
     }
+
+    //initalize special settings
+    pthread_mutex_lock(&FLAG_Mutx);
+    //read flags
+    FLAGS.Hold_Time_Flag = Read_flags("simulator", "hold_for_dante", false);
+    FLAGS.Reset_Sim_Flag = false;
+    //read configs
+    CONF.Co_Sim_Enable = Read_flags("simulator", "co_sim_enable", false);
+    CONF.Co_Sim_Sync_Enable = Read_flags("cosim", "sync_enable", false);
+    CONF.Realtime_Timestep = Read_flags("simulator", "realtime_timestep", false);
+    CONF.UP_N = 0;
+    CONF.PUB_N = 0;
+    CONF.TimeStep = 0.0;
+    CONF.config_captured = false;
+    //return the mutex
+    pthread_mutex_unlock(&FLAG_Mutx);
 
     //Start reading JSON and send configs to endpoints
     endpoints = cJSON_GetObjectItem(root, "endpoints");
@@ -200,7 +216,7 @@ char *SimName(void)
     }
 }
 
-bool Read_flags(void)
+bool Read_flags(char *JSON_Catagory, char *flagname, bool default_condition)
 {
     // Vars setup
     char *json_string;
@@ -223,14 +239,51 @@ bool Read_flags(void)
     }
 
     // Read Simulator information
-    simulator = cJSON_GetObjectItem(root, "simulator");
+    simulator = cJSON_GetObjectItem(root, JSON_Catagory);
     cJSON_ArrayForEach(flags, simulator){
-            cJSON *ExecutableName = cJSON_GetObjectItem(flags, "hold_for_dante");
-            if (!ExecutableName){
-                return false;
+            cJSON *iter_JSON = cJSON_GetObjectItem(flags, flagname);
+            if (!iter_JSON){
+                fprintf(stderr, "Flag %s not in config!\n", flagname);
+                return default_condition;
             }else{
-                printf("Executable Name = %s \n", ExecutableName->valuestring);
-                return strtobool(ExecutableName->valuestring);
+                printf("Flag %s = %s \n", flagname, iter_JSON->valuestring);
+                return strtobool(iter_JSON->valuestring);
+            }
+    }
+}
+
+char *Read_Vars(char *JSON_Catagory, char *Varname, char *default_condition)
+{
+    // Vars setup
+    char *json_string;
+    const cJSON *simulator = NULL;
+    const cJSON *flags = NULL;
+
+    // Read in JSON file
+    json_string = ReadFile("input.json");
+    cJSON *root = cJSON_Parse(json_string);
+    int n = cJSON_GetArraySize(root);
+
+    // Make sure JSON file is read succesfully
+    if (root == NULL)
+    {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL)
+        {
+            fprintf(stderr, "Error before: %s\n", error_ptr);
+        }
+    }
+
+    // Read Simulator information
+    simulator = cJSON_GetObjectItem(root, JSON_Catagory);
+    cJSON_ArrayForEach(flags, simulator){
+            cJSON *iter_JSON = cJSON_GetObjectItem(flags, Varname);
+            if (!iter_JSON){
+                fprintf(stderr, "Flag %s not in config!\n", Varname);
+                return default_condition;
+            }else{
+                printf("Flag %s = %s \n", Varname, iter_JSON->valuestring);
+                return iter_JSON->valuestring;
             }
     }
 }

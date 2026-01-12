@@ -16,11 +16,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import platform
 import threading
 import time
 import socket
-from simulation import simulation
-from Errors import *
+import sys
+from Simulation_Manager import simulation
+from Simulation_Manager import Errors
 
 injectedAttacks = []
 
@@ -29,20 +31,40 @@ class experiment_manager:
     completed_simulations = 0
     active_simulations = {}
     minimega_connections = 0
-    
-    def __init__(self, max_active_simulations):
-        self.max_active_simulations = int(max_active_simulations)
-        code = os.system("/opt/minimega/bin/minimega -e namespace")
-        if code != 0:
-            raise MinimegaNotActive
 
+    def __init__(self, max_active_simulations, wait_time = 1):
+        # minimega executable
+        self.mm = '/opt/minimega/bin/minimega'
+        # wait time in minutes
+        self.wait_time = max(1, wait_time)
+
+        if 'Windows' == platform.system():
+          # flownex
+          self.os = 'windows'
+          self.shell = 'powershell'
+          self.drive = 'c:'
+        elif 'Linux' == platform.system():
+          # asherah
+          self.os = 'linux'
+          self.shell = 'bash'
+          self.drive = ''
+
+        self.has_terminal = sys.stdin.isatty() or sys.stdout.isatty() or sys.stderr.isatty()
+
+        self.max_active_simulations = int(max_active_simulations)
+        os.system(f'{self.mm} -e namespace\n')
+
+    # create_simulation is being called from multiple threads from arcade_server
+    # adding lock to ensure we don't lose simulations
     def create_simultation(self, config_file, uid):
         try:
-            sim = simulation(config_file, uid)
+            sim = simulation.simulation(config_file, uid)
         except ConfigError:
+            print(f'create_simulation error with {uid} {config_file}')
             return
         self.queued_simulations.append(sim)
-        print(f'Queued {sim.uid}')
+        position = len(self.queued_simulations)
+        print(f'[+] Queued {sim.uid} (Total in queue: {position})')
 
     def print_config(self):
         print(self.config)
@@ -50,34 +72,40 @@ class experiment_manager:
     def start_simulation(self, sim):
         self.minimega_connections += 1
         self.active_simulations[str(sim.uid)] = sim
-        print(self.active_simulations)
-        os.system(f"/opt/minimega/bin/minimega -e namespace {sim.uid} read /tmp/{str(sim.uid)}.mm")
+        #print(self.active_simulations)
+        os.system(f'{self.mm} -e namespace {sim.uid} read /tmp/{str(sim.uid)}.mm\n')
         t1 = threading.Thread(target=self.wait_for_end, args=(sim,),daemon=True)
         sim.thread = t1
         t1.start()
-        print(f'Started {sim.uid}')
+        print(f'[+] Started {sim.uid}')
         self.minimega_connections -= 1
         
     def inject_attack(self, temp_filepath, sim):
-        global injectedAttacks
-        files = sim.attack['input_files']
-        #Open the minimega file for editing
         with open(temp_filepath, "a") as file:
-            file.write(f"clear cc filter")
-            file.write(f"\ncc filter name={sim.attack['attack_simulator_name']}")
-            #filepath will just be the name of the variable in the config.yaml. We need the value stored in the variable
-            for filepath in sim.files:
-                to_copy = files[filepath]
-                #Minimega can only copy files that are in the /tmp/minimega/files/ directory
-                os.system(f"cp {to_copy} /tmp/minimega/files")
-                #filename needs to be just the name of the file, for example /tmp/minimega/files/hello.txt will be hello.txt
-                filename = to_copy.split("/")[-1]
-                file.write(f"\ncc send /tmp/minimega/files/{filename}")
-                #If the execute value is set to true and the extension is .sh then run the file
-                if sim.attack["execute"] == True and len(filename.split(".")) > 1 and filename.split(".")[1] == "sh":
-                    print(f"Executing: {filename}")
-                    file.write(f"\ncc background su - root -c 'bash /tmp/miniccc/files/{filename}' &\n")
-                    #injectedAttacks.append(f"/opt/minimega/bin/minimega -e namespace {sim.uid} cc exec su - root -c 'bash /tmp/miniccc/files/{filename}' &")            
+            file.write("clear cc filter\n")
+            file.write(f"cc filter os={self.os}\n")
+            file.write(f"cc exec {self.shell} -c 'echo {sim.uid} > {self.drive}/tmp/uid.txt'\n")
+            file.write(f"cc filter name={sim.attack_simulator_name}\n")
+
+            for file_info in sim.input_files:
+                full_path = file_info["path"]
+                filename = os.path.basename(full_path)
+                vm = file_info["vm"]
+                #print(vm)
+
+                # Copy file to minimega shared directory
+                os.system(f"cp {full_path} /tmp/minimega/files")
+                file.write(f"cc filter name={vm}\ncc send /tmp/minimega/files/{filename}\n")
+
+                if file_info["execute"]:
+                    # Use `cc exec` for foreground execution with output
+                    if filename.endswith(".sh"):
+                        file.write(f"cc filter name={vm}\ncc exec {self.shell} -c /tmp/miniccc/files/{filename}\n")
+                    elif filename.endswith(".ps1"):
+                        file.write(f"cc filter name={vm}\ncc exec powershell -ExecutionPolicy Bypass -File /tmp/miniccc/files/{filename}\n")
+                    else:
+                        file.write(f"cc filter name={vm}\ncc exec /tmp/miniccc/files/{filename}\n")
+          
 
     #Creates a unique tap name based on the uid of the namespace to prevent overlap in minimega
     def replace_tapid(self, fin, sim):
@@ -99,28 +127,37 @@ class experiment_manager:
                     self.replace_tapid(temp_path, sim)
                     self.inject_attack(temp_path, sim)
                     sim.parsed = True
-                    print(f'Parsed {sim.uid}')
+                    print(f'[+] Parsed {sim.uid}')
 
     #Method is designed to be run in a thread, will wait for the simulation to reach the maximum runtime, retrive experiment results, and then kill it
     def wait_for_end(self, sim):
         global injectedAttacks
-        max_simulation_runtime = sim.max_simulation_runtime
+        # use wallclock_timeout since we don't have access to simulation time
+        # max_simulation_runtime = sim.max_simulation_runtime
+        wallclock_timeout = sim.wallclock_timeout
         start_time = time.perf_counter()
 
-        while (time.perf_counter() - start_time) < max_simulation_runtime:
+        while (time.perf_counter() - start_time) < wallclock_timeout:
             continue
 
-        #Data gathering functions
-        os.system(f"/opt/minimega/bin/minimega -e namespace {sim.uid} cc exec python3 /tmp/miniccc/files/gatherResults.py")
-        time.sleep(1)
-        os.system(f"/opt/minimega/bin/minimega -e namespace {sim.uid} cc recv /tmp/miniccc/files/result.txt")
-        result = os.popen(f"cat /tmp/minimega/files/{sim.uid}/miniccc_responses/36/*/tmp/miniccc/files/result.txt").read()
+        # Run staging script
+        if sim.staging_script:
+            print(f"[+] Running staging script: {sim.staging_script}")
+            os.system(f'{self.mm} -e namespace {sim.uid} read {sim.staging_script}\n')
 
-        print("result: " + result)
-        os.system(f"/opt/minimega/bin/minimega -e namespace {sim.uid} cc delete command all")
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect(("127.0.0.1", 54321))
-            s.send(result.encode('utf-8'))
+        # default wait time is 1 minute (60 seconds)
+        print(f"[+] Waiting {self.wait_time} minute(s) before running collection")
+        time.sleep(60 * self.wait_time)
+
+        # Run collection script
+        if sim.collection_script:
+            print(f"[+] Running collection script: {sim.collection_script}")
+            os.system(f'{self.mm} -e namespace {sim.uid} read {sim.collection_script}\n')
+
+        # only run tree if a terminal is connected, if nohup, don't run tree
+        if self.has_terminal:
+          result = os.popen(f"tree /tmp/minimega/files/{sim.uid}/miniccc_responses/").read()
+          # print("[+] result: " + result)
 
         self.kill_simulation(sim)
         self.completed_simulations += 1
@@ -129,12 +166,12 @@ class experiment_manager:
     def kill_simulation(self, sim):
         try:
             self.active_simulations.pop(str(sim.uid))
-            os.system(f"/opt/minimega/bin/minimega -e namespace {sim.uid} cc recv name={sim.attack['attack_simulator_name']} {sim.attack['output_path']}")
-            os.system(f"/opt/minimega/bin/minimega -e clear namespace {sim.uid}")
-            print(f"Killed {sim.uid}")
+            #os.system(f"/opt/minimega/bin/minimega -e namespace {sim.uid} cc recv name={sim.attack['attack_simulator_name']} {sim.attack['output_path']}")
+            os.system(f'{self.mm} -e clear namespace {sim.uid}\n')
+            print(f"[+] Killed {sim.uid}")
         except KeyError as e:
-            print(e)
-            print(str(sim.uid) + " not active")
+            print(f'[-] {e}')
+            print(f'[-] {str(sim.uid)} not active')
             print(self.active_simulations)
 
     #This will handle any messages coming from the simulation. Currently the only implemented message is to kill the simulation,
@@ -145,7 +182,7 @@ class experiment_manager:
             try:
                 self.kill_simulation(self.active_simulations[uid])
             except KeyError:
-                print(f'{uid} not in the dictionary')
+                print(f'[-] {uid} not in the dictionary')
                 print(self.active_simulations)
 
     def run(self):

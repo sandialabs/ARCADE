@@ -125,7 +125,7 @@ The Data Broker reads an input .JSON file named “input.json” that must be co
               "ActuatorMem": "2058",
               "ScanTime": "0.1",
               "TimeMem": "2048",
-              "MemFormat": "32_float",
+              "MemFormat": "FLOAT32",
               "Endianess":"big,big",
               "Port":"502"
           },
@@ -138,7 +138,7 @@ The Data Broker reads an input .JSON file named “input.json” that must be co
               "ActuatorMem": "2054",
               "ScanTime": "0.1",
               "TimeMem": "2048",
-              "MemFormat": "32_float",
+              "MemFormat": "FLOAT32",
               "Endianess":"big,big",
               "Port":"502"
           }
@@ -178,7 +178,7 @@ Let's break down what each of these configuration options is.
  - **TimeMem**: This is the memory address for the Endpoint to report simulation time to the PLC. 
    - This is an optional feature and can be disabled by setting to "-1"
  - **MemFormat**: This defines the format the Endpoint will write and read to the PLC.
-   - Available formats:  16_float, 32_float, 64_float, 16_int, 32_int, 64_int, 16_uint, 32_uint, 64_uint
+   - Available formats: FLOAT16, FLOAT32, FLOAT64, INT16, INT32, INT64, UINT16, UINT32, UINT64
  - **Endianess**: This is only for Modbus connections. This defines the word and byte order for the PLC memory format ("byte_order,word_order"). This is a pair combination of "big" and "litle". ("big,big","litle,big")
  - **Port**: The port that the PLC is communicating on. Modbus default is 502.
 
