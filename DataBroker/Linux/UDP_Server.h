@@ -18,8 +18,6 @@
     #include <sys/socket.h>
     #include <arpa/inet.h>
     #include <netinet/in.h>
-    #ifdef __APPLE__
-        #include <netinet/ip.h>
     #endif
 #endif
 
