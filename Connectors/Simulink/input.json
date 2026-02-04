@@ -1,0 +1,15 @@
+{
+    "Simulator": [
+        {
+            "executableName": "Simulink",
+            "hold_for_dante": "false",
+            "co_sim_enable": "true"
+        }
+    ],
+    "cosim": [
+        {
+            "sync_enable": "true",
+            "outputs": "Output_Value_1,Output_Value_2"
+        }
+    ]
+}
