@@ -46,4 +46,12 @@ void Sem_Interface(void)
  drain_semaphore(msg_sem);
  drain_semaphore(co_sim);
  drain_semaphore(co_sim_2);
+
+ // Close handles - persistent opens are managed by each module
+ sem_close(pub);
+ sem_close(up);
+ sem_close(stop);
+ sem_close(msg_sem);
+ sem_close(co_sim);
+ sem_close(co_sim_2);
 }

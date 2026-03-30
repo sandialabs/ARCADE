@@ -18,7 +18,6 @@
     #include <sys/socket.h>
     #include <arpa/inet.h>
     #include <netinet/in.h>
-    #endif
 #endif
 
 void UDP_Server(char *msg);

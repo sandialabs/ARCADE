@@ -6,9 +6,6 @@
 
 void User_Control(void){
     
-    sem_t *stop;
-	stop = sem_open("/stop", O_CREAT, 0644, 0);
-
     char invar;
 
     while(1){
@@ -19,7 +16,7 @@ void User_Control(void){
         
         if (invar == 'x' || invar == 'X'){
             printf("Stopping Simulator\n");
-            sem_post(stop);
+            Set_Stop();
             sleep(1); /*slow down the kill to let threads close out safely*/
             break;
         }

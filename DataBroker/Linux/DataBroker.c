@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 #include "DataBroker.h"
 #include "Sem_Interface.h"
+#include "Sem_Stop.h"
 #include "Shm_Interface.h"
 #include "PLC_Interface.h"
 #include "Sim_Control.h"
@@ -38,6 +39,7 @@ int main()
 	pthread_t DA_Thr;
 	pthread_t ZMQ_Thr;
 	Sem_Interface();
+	Init_Stop_Semaphore();
 	printf("Semaphores Initialized\n");
 	
 
@@ -87,6 +89,7 @@ int main()
 	// Destory mutexes
 	pthread_mutex_destroy(&DATA_Mutx);
 	pthread_mutex_destroy(&FLAG_Mutx);
+	Cleanup_Stop_Semaphore();
 
 	return 0;
 }

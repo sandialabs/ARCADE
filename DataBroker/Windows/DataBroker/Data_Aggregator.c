@@ -195,22 +195,32 @@ void enqueue(Queue* q, DATA value) {
 
 DATA dequeue(Queue* q) {
     EnterCriticalSection(&q->lock);
+
     if (q->front == NULL) {
         fprintf(stderr, "Queue is empty\n");
         LeaveCriticalSection(&q->lock);
-        return;  // Or other error code
+
+        // Return a null struct instead of empty
+        DATA empty_data = { 0 };  // Initialize all fields to zero
+        strncpy(empty_data.Name, "EMPTY", 127);
+        empty_data.Name[127] = '\0';
+        strncpy(empty_data.Type, "DOUBLE", 49);
+        empty_data.Type[49] = '\0';
+        empty_data.Value = 0.0;
+        empty_data.Time = 0.0;
+        return empty_data;
     }
 
     Node* temp = q->front;
     DATA data = temp->data;
     q->front = q->front->next;
 
-    // If front becomes NULL, then change rear also as NULL
-    if (q->front == NULL)
+    if (q->front == NULL) {
         q->rear = NULL;
+    }
 
-    free(temp);
     LeaveCriticalSection(&q->lock);
+    free(temp);
     return data;
 }
 

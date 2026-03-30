@@ -3,12 +3,29 @@
 
 sem_t* stop;
 
+// Initialize the stop semaphore handle once
+void Init_Stop_Semaphore(void) {
+    stop = sem_open("/stop", O_CREAT, 0644, 0);
+    if (stop == SEM_FAILED) {
+        perror("sem_open /stop failed");
+        stop = NULL;
+    }
+}
+
+// Cleanup the stop semaphore handle
+void Cleanup_Stop_Semaphore(void) {
+    if (stop != NULL && stop != SEM_FAILED) {
+        sem_close(stop);
+        sem_unlink("/stop");
+        stop = NULL;
+    }
+}
+
 //utility to check the simulations stop flag semaphore
 int Sem_Stop(void)
 {
-    stop = sem_open("/stop", O_CREAT, 0644, 0);
-    if (stop == SEM_FAILED) {
-        return 0;  // Can't open semaphore, assume not stopped
+    if (stop == NULL) {
+        return 0;
     }
     
 #ifdef __APPLE__
@@ -34,10 +51,8 @@ int Sem_Stop(void)
 }
 
 void Set_Stop(void) {
-    // Post (increment) the semaphore
-    stop = sem_open("/stop", O_CREAT, 0644, 0);
-    if (stop == SEM_FAILED) {
-        perror("sem_open /stop failed");
+    if (stop == NULL) {
+        fprintf(stderr, "Stop semaphore not initialized.\n");
         return;
     }
     if (sem_post(stop) == -1) {
@@ -45,16 +60,4 @@ void Set_Stop(void) {
     }
 }
 
-// Don't forget to close and unlink the semaphore when done
-void Cleanup_Stop(void) {
-    stop = sem_open("/stop", O_CREAT, 0644, 0);
-    if (stop == SEM_FAILED) {
-        return;
-    }
-    if (sem_close(stop) == -1) {
-        perror("sem_close");
-    }
-    if (sem_unlink("/stop") == -1) {
-        perror("sem_unlink");
-    }
-}
+
