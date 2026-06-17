@@ -1,6 +1,8 @@
 # Data Broker Setup Guide
 
-The software package developed by Sandia National Laboratories is intended to allow the integration of physics models into emulations of control networks. To accomplish this, these programs are included:
+The software package ARCADE developed by Sandia National Laboratories is intended to allow the integration of physics models into emulations of control networks. If you are new to ARCADE, you may want to look at this simple [example](./README.first.md) before proceeding. 
+
+The ARCADE package includes:
 - DataBroker
   - Windows DataBroker
   - Linux DataBroker
