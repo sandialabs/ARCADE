@@ -1,6 +1,7 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs
+﻿/.vs
 /DataBroker/Windows/.vs
+.direnv/
+*.o
+DataBroker/Unix/DataBroker
+DataBroker/Unix/.ninja_log
+DataBroker/Unix/.ninja_deps

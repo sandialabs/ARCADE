@@ -7,6 +7,7 @@ import sys
 import os
 import zmq
 import json
+import math
 from opcua import ua, Server, Client
 from pymodbus.client import ModbusTcpClient as ModbusClient
 
@@ -380,7 +381,7 @@ def initialization():
                 #if json cannot be read, try again, message could be corrupt.
                 if retry_attempts < retrys_allowed:
                     retry_attempts += 1
-                    print("JSON init is corrupt, attempting retry {} of {}}\n".format(retrys_allowed,retry_attempts))
+                    print("JSON init is corrupt, attempting retry {} of {}\n".format(retry_attempts,retrys_allowed))
                     reply = bytes("FAILED",'utf-8')
                     reciever.send(reply)
                 else:
@@ -730,9 +731,32 @@ class Connector:
     def __repr__(self):
         return "Connector('{},{},{},{},{}')".format(self.config.export_config(),self.serAdd,self.Data,self.Lock,self.Event)
                
+
+def parse_udp_records(message):
+    """Read data records and the stop flag."""
+    records = {}
+    stopped = False
+    for line in message.splitlines():
+        fields = line.split()
+        if not fields:
+            continue
+        if fields == ["STOP"]:
+            stopped = True
+            continue
+        if len(fields) not in (4, 5) or fields[-1] != "sec":
+            raise ValueError("Invalid UDP record")
+        name = fields[0]
+        offset = 1 if len(fields) == 4 else 2
+        value, time = float(fields[offset]), float(fields[offset + 1])
+        if not math.isfinite(value) or not math.isfinite(time) or name in records:
+            raise ValueError("Invalid UDP value")
+        records[name] = (value, time)
+    if not records and not stopped:
+        raise ValueError("Empty UDP message")
+    return records, stopped
+
 def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
 
-    Event = threading.Event()
     bufferSize          = 128*1000
     serverAddressPort   = ("", 8000)
     # Create a UDP socket at client side
@@ -753,6 +777,7 @@ def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
     while not Event.is_set():
         #recieve message from UDP
         attempts = 0
+        msgFromServer = None
         while attempts < 5 and not Event.is_set():
             try:
                 msgFromServer,address = UDPClientSocket.recvfrom(bufferSize)
@@ -760,11 +785,21 @@ def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
             except:
                 attempts += 1
                 logging.info("UDP Client timeout %i of 5" % attempts)
-                if attempts > 5:
-                    Event.set()
-                    break
 
+        if msgFromServer is None:
+            Event.set()
         if Event.is_set():
+            break
+
+        #Decode message
+        try:
+            records, stopped = parse_udp_records(msgFromServer.decode("UTF-8"))
+        except (UnicodeError, ValueError):
+            logging.info("Invalid UDP message.")
+            continue
+        if stopped:
+            Event.set()
+            logging.info("UDP Client was sent stop request from DataBroker.")
             break
 
         #check if its the first update to pass the server IP to PLC threads
@@ -773,25 +808,10 @@ def UDP_Client(Data,serAdd,Lock,nPLCs,Event):
                 serAdd.put(address[0]) #there has to be a better way to do this
             First_Time = False
 
-        #Decode message
-        msg = str(msgFromServer,'UTF-8')
-        msg_split = msg.split()
+        for i, tag in enumerate(Tags):
+            if tag in records:
+                Values[i], Time_Stamp = records[tag]
 
-        #See if a stop was requested
-        if msg_split[0] == "STOP":
-            Event.set()
-            logging.info("UDP Client was sent stop request from DataBroker.")
-            break
-
-        #get and store values from msg
-        for i in range(nTags):
-            try:
-                IDX = msg_split.index(Tags[i])
-                Values[i] = float(msg_split[IDX+1])
-                Time_Stamp = float(msg_split[IDX+2])
-            except:
-                logging.info("Tag: %s not in UDP message..." % Tags[i])
-        
         #plop data in data repo
         with Lock:
             for i in range(nTags):
