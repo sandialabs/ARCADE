@@ -1,0 +1,30 @@
+cflags = -D_POSIX_C_SOURCE=200809L -O2 -flto -std=c11 -Wall -Werror
+
+# -lrt needs to be removed on macos iirc
+ldflags = -lpthread -lzmq -lrt
+
+rule cc
+    command = cc -MMD -MF $out.d $cflags -c $in -o $out
+    depfile = $out.d
+    deps = gcc
+
+rule ld
+    command = cc $cflags $in -o $out $ldflags
+
+build atomicSet.o: cc atomicSet.c | atomicSet.h
+build cJSON.o: cc cJSON.c | cJSON.h
+build Data_Aggregator.o: cc Data_Aggregator.c | Data_Aggregator.h
+build DataBroker.o: cc DataBroker.c
+build init_Server.o: cc init_Server.c | init_Server.h
+build PLC_Interface.o: cc PLC_Interface.c | PLC_Interface.h
+build Sem_Interface.o: cc Sem_Interface.c | Sem_Interface.h
+build Sem_Stop.o: cc Sem_Stop.c | Sem_Stop.h
+build Shm_Interface.o: cc Shm_Interface.c
+build Sim_Control.o: cc Sim_Control.c | Shm_Interface.h
+build UDP_Server.o: cc UDP_Server.c | UDP_Server.h
+build utils.o: cc utils.c | utils.h
+build ZMQ_Client.o: cc ZMQ_Client.c | ZMQ_Client.h
+
+build DataBroker: ld atomicSet.o cJSON.o Data_Aggregator.o DataBroker.o init_Server.o PLC_Interface.o Sem_Interface.o Sem_Stop.o Shm_Interface.o Sim_Control.o UDP_Server.o utils.o ZMQ_Client.o
+
+default DataBroker

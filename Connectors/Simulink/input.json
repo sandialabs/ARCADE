@@ -2,7 +2,7 @@
     "Simulator": [
         {
             "executableName": "Simulink",
-            "hold_for_dante": "false",
+            "hold": "false",
             "co_sim_enable": "true"
         }
     ],
